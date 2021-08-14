@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using BepInEx;
 using CustomBeatmaps.Packages;
-using CustomBeatmaps.UI.BeatmapPicker;
+using CustomBeatmaps.UI.ReactEsque;
+using CustomBeatmaps.UI.Structure;
 using UnityEngine;
 
 namespace CustomBeatmaps
@@ -13,28 +15,42 @@ namespace CustomBeatmaps
 
         private static readonly string BEATMAP_RELPATH = "USER_PACKAGES";
 
-        private BeatmapPickerRenderer _beatmapPickerRenderer;
-
-        public string UserPackageDirectory =>
+        private string UserPackageDirectory =>
             $"{Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/'))}/{BEATMAP_RELPATH}";
 
-        public PackageGrabber PackageGrabber;
+        private PackageGrabber _packageGrabber;
+
+        private ICustomBeatmapUIMain _uiMain;
 
         private void Awake()
         {
             Instance = this;
+            Debug.Log("ADDED IN");
             SetCustomGUISkin();
 
-            PackageGrabber = new PackageGrabber(UserPackageDirectory);
+            _packageGrabber = new PackageGrabber(UserPackageDirectory);
 
-            Debug.Log("ADDED IN");
-            _beatmapPickerRenderer = new BeatmapPickerRenderer(beatmap =>
-            {
-                Debug.Log($"TEST: {beatmap}");
-            });
+            _uiMain = new CustomBeatmapUIRenderer();
+            _uiMain.Init(_packageGrabber, OnPlay, OnDownloadRequest, DoOnlineSearch, DoLocalSearch);
+        }
 
-            // TODO: Delete, move to patch.
-            DontDestroyOnLoad(_beatmapPickerRenderer.GameObject);
+        private void OnDownloadRequest(UniqueId obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DoLocalSearch(SearchQuery searchQuery, Action<ICollection<CustomPackageLocalData>> onLoad)
+        {
+            // TODO: Grab local files as an ICollection, sort them based on query and get 'em
+            throw new NotImplementedException();
+        }
+        private void DoOnlineSearch(SearchQuery searchQuery, Action<ICollection<CustomPackageInfo>> onLoad)
+        {
+            throw new NotImplementedException();
+        }
+        private void OnPlay(CustomBeatmapInfo obj)
+        {
+            throw new NotImplementedException();
         }
 
         public void ShowError(Exception e)

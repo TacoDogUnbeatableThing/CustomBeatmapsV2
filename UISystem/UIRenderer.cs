@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace CustomBeatmaps.UI
+namespace CustomBeatmaps.UISystem
 {
     /**
      * An abstracted "layer" to GUI elements
@@ -21,8 +21,11 @@ namespace CustomBeatmaps.UI
         }
         public UIRenderer() : this(null) {}
 
-        protected abstract void OnUnityGUI();
-        
+        protected virtual void OnUnityGUI()
+        {
+            // Can be left empty.
+        }
+
         class SimpleRenderMono : MonoBehaviour
         {
             public Action OnGUIAction;
