@@ -11,8 +11,9 @@ namespace CustomBeatmaps.UISystem
      */
     public class UI
     {
-        private static Dictionary<string, object> _states = new Dictionary<string, object>();
-        private static Dictionary<string, object[]> _effectDependencies = new Dictionary<string, object[]>();
+        private static readonly Dictionary<string, object> States = new Dictionary<string, object>();
+        private static readonly Dictionary<string, object[]> EffectDependencies = new Dictionary<string, object[]>();
+
         private static string GetNewKeyNow(int lineNumber)
         {
             return Environment.StackTrace + $"->{lineNumber}";
@@ -26,53 +27,45 @@ namespace CustomBeatmaps.UISystem
         public static (T, Action<T>) UseState<T>(T defaultValue, [CallerLineNumber] int lineNumber = 0)
         {
             // ReSharper disable once ExplicitCallerInfoArgument
-            return UseState(() => defaultValue, lineNumber: lineNumber);
+            return UseState(() => defaultValue, lineNumber);
         }
 
         public static (T, Action<T>) UseState<T>(Func<T> getDefaultValue, [CallerLineNumber] int lineNumber = 0)
         {
-            string key = GetNewKeyNow(lineNumber);
+            var key = GetNewKeyNow(lineNumber);
 
-            if (!_states.ContainsKey(key))
-            {
-                _states[key] = getDefaultValue.Invoke();
-            }
+            if (!States.ContainsKey(key)) States[key] = getDefaultValue.Invoke();
 
-            T result = (T)_states[key];
-            Action<T> setter = t => _states[key] = t;
+            var result = (T) States[key];
+            Action<T> setter = t => States[key] = t;
 
             return (result, setter);
         }
 
         public static void UseEffect(Action onChange, object[] dependencies, [CallerLineNumber] int lineNumber = 0)
         {
-            string key = GetNewKeyNow(lineNumber);
+            var key = GetNewKeyNow(lineNumber);
 
-            if (!_effectDependencies.ContainsKey(key))
+            if (!EffectDependencies.ContainsKey(key))
             {
-                _effectDependencies[key] = dependencies;
+                EffectDependencies[key] = dependencies;
                 onChange.Invoke();
             }
             else
             {
-                object[] oldDeps = _effectDependencies[key];
+                var oldDeps = EffectDependencies[key];
                 if (oldDeps.Length != dependencies.Length)
-                {
                     onChange.Invoke();
-                }
                 else
-                {
-                    for (int i = 0; i < oldDeps.Length; ++i)
-                    {
+                    for (var i = 0; i < oldDeps.Length; ++i)
                         if (!Equals(oldDeps[i], dependencies[i]))
                         {
                             onChange.Invoke();
                             break;
                         }
-                    }
-                }
-                _effectDependencies[key] = dependencies;
+
+                EffectDependencies[key] = dependencies;
             }
-        } 
-    };
+        }
+    }
 }

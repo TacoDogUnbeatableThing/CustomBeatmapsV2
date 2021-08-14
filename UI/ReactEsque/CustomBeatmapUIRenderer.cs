@@ -8,7 +8,12 @@ namespace CustomBeatmaps.UI.ReactEsque
 {
     public class CustomBeatmapUIRenderer : UIRenderer, ICustomBeatmapUIMain
     {
-        public void Init(PackageGrabber packageGrabber, Action<CustomBeatmapInfo> onPlayRequest, Action<UniqueId> onDownloadRequest, Action<SearchQuery, Action<ICollection<CustomPackageInfo>>> doOnlineSearch, Action<SearchQuery, Action<ICollection<CustomPackageLocalData>>> doLocalSearch)
+        public void Init(
+            PackageGrabber packageGrabber,
+            Action<CustomBeatmapInfo> onPlayRequest,
+            Action<UniqueId> onDownloadRequest,
+            Action<SearchQuery, Action<ICollection<CustomPackageInfo>>> doOnlineSearch,
+            Action<SearchQuery, Action<ICollection<CustomPackageLocalData>>> doLocalSearch)
         {
             // TODO: Store locally/constructor
             throw new NotImplementedException();

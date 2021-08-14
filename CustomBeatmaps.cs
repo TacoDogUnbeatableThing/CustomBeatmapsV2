@@ -15,12 +15,12 @@ namespace CustomBeatmaps
 
         private static readonly string BEATMAP_RELPATH = "USER_PACKAGES";
 
-        private string UserPackageDirectory =>
-            $"{Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/'))}/{BEATMAP_RELPATH}";
-
         private PackageGrabber _packageGrabber;
 
         private ICustomBeatmapUIMain _uiMain;
+
+        private string UserPackageDirectory =>
+            $"{Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/'))}/{BEATMAP_RELPATH}";
 
         private void Awake()
         {
@@ -44,10 +44,12 @@ namespace CustomBeatmaps
             // TODO: Grab local files as an ICollection, sort them based on query and get 'em
             throw new NotImplementedException();
         }
+
         private void DoOnlineSearch(SearchQuery searchQuery, Action<ICollection<CustomPackageInfo>> onLoad)
         {
             throw new NotImplementedException();
         }
+
         private void OnPlay(CustomBeatmapInfo obj)
         {
             throw new NotImplementedException();
@@ -61,7 +63,7 @@ namespace CustomBeatmaps
 
         private void SetCustomGUISkin()
         {
-            GUISkin skin = ScriptableObject.CreateInstance<GUISkin>();
+            var skin = ScriptableObject.CreateInstance<GUISkin>();
             skin.window.normal.background = Texture2D.grayTexture;
         }
     }
