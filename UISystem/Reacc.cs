@@ -9,7 +9,7 @@ namespace CustomBeatmaps.UISystem
      * but dammit if they're gonna render UI in code,
      * I'm gonna try shoving my own system into this
      */
-    public class UI
+    public static class Reacc
     {
         private static readonly Dictionary<string, object> States = new Dictionary<string, object>();
         private static readonly Dictionary<string, object[]> EffectDependencies = new Dictionary<string, object[]>();

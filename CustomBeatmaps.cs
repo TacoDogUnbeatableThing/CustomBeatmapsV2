@@ -31,26 +31,51 @@ namespace CustomBeatmaps
             _packageGrabber = new PackageGrabber(UserPackageDirectory);
 
             _uiMain = new CustomBeatmapUIRenderer();
-            _uiMain.Init(_packageGrabber, OnPlay, OnDownloadRequest, DoOnlineSearch, DoLocalSearch);
+            _uiMain.Init(new CustomBeatmapUIMainProps(
+                _packageGrabber,
+                OnPlayRequest,
+                OnDownloadRequest,
+                DoOnlineSearch,
+                DoLocalSearch,
+                DoLeaderboardSearch,
+                GetOnlinePackageCount,
+                GetLocalPackageCount 
+                ));
         }
 
-        private void OnDownloadRequest(UniqueId obj)
+        private void GetLocalPackageCount(Action<int> getter)
+        {
+            getter.Invoke(_packageGrabber.GetLocalPackages().Count);
+        }
+
+        private void GetOnlinePackageCount(Action<int> getter)
+        {
+            // TODO: Query database?
+            throw new NotImplementedException();
+        }
+
+        private void DoLeaderboardSearch(UniqueId arg1, string arg2, Action<LeaderboardInfo> arg3)
         {
             throw new NotImplementedException();
         }
 
-        private void DoLocalSearch(SearchQuery searchQuery, Action<ICollection<CustomPackageLocalData>> onLoad)
+        private void OnDownloadRequest(UniqueId id)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DoLocalSearch(SearchQuery searchQuery, Action<IList<CustomPackageLocalData>> action)
         {
             // TODO: Grab local files as an ICollection, sort them based on query and get 'em
             throw new NotImplementedException();
         }
 
-        private void DoOnlineSearch(SearchQuery searchQuery, Action<ICollection<CustomPackageInfo>> onLoad)
+        private void DoOnlineSearch(SearchQuery searchQuery, Action<IList<CustomPackageInfo>> action)
         {
             throw new NotImplementedException();
         }
 
-        private void OnPlay(CustomBeatmapInfo obj)
+        private void OnPlayRequest(UniqueId id, string difficulty)
         {
             throw new NotImplementedException();
         }
