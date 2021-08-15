@@ -50,33 +50,39 @@ namespace CustomBeatmaps
 
         private void GetOnlinePackageCount(Action<int> getter)
         {
-            // TODO: Query database?
+            // TODO: Query database for total package count.
             throw new NotImplementedException();
         }
 
-        private void DoLeaderboardSearch(UniqueId arg1, string arg2, Action<LeaderboardInfo> arg3)
+        private void DoLeaderboardSearch(UniqueId id, string difficulty, Action<LeaderboardInfo> getter)
         {
-            throw new NotImplementedException();
+            // TODO: Search, later.
+            getter.Invoke(LeaderboardInfo.Empty);
         }
 
         private void OnDownloadRequest(UniqueId id)
         {
+            // TODO: Begin download locally from online, given id.
+            // TODO: BeatmapPlayer: Cancel previous "play", but keep the download going.
             throw new NotImplementedException();
         }
 
-        private void DoLocalSearch(SearchQuery searchQuery, Action<IList<CustomPackageLocalData>> action)
+        private void DoLocalSearch(SearchQuery searchQuery, Action<IList<CustomPackageLocalData>> getter)
         {
             // TODO: Grab local files as an ICollection, sort them based on query and get 'em
             throw new NotImplementedException();
         }
 
-        private void DoOnlineSearch(SearchQuery searchQuery, Action<IList<CustomPackageInfo>> action)
+        private void DoOnlineSearch(SearchQuery searchQuery, Action<IList<CustomPackageInfo>> getter)
         {
+            // TODO: Jane's PR, potentially.
             throw new NotImplementedException();
         }
 
         private void OnPlayRequest(UniqueId id, string difficulty)
         {
+            // TODO: make a BeatmapPlayer object, and tell it that we want to play this beatmap.
+            //      If it's not downloaded, start a download and play afterwards!
             throw new NotImplementedException();
         }
 

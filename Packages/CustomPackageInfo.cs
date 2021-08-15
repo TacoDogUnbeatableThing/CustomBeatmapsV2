@@ -19,17 +19,15 @@ namespace CustomBeatmaps.Packages
     {
         public readonly string PackageName;
         public readonly string Date;
-        public readonly string Artist;
         public readonly DifficultyInfo[] Difficulties;
         public readonly UniqueId DatabaseId;
         public readonly string FileId;
 
-        public CustomPackageInfo(string packageName, string date, string artist, DifficultyInfo[] difficulties,
+        public CustomPackageInfo(string packageName, string date, DifficultyInfo[] difficulties,
             UniqueId databaseId, string fileId)
         {
             PackageName = packageName;
             Date = date;
-            Artist = artist;
             Difficulties = difficulties;
             DatabaseId = databaseId;
             FileId = fileId;

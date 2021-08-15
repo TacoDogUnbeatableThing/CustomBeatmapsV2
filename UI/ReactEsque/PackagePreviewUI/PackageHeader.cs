@@ -2,7 +2,7 @@
 
 namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
 {
-    public static class PackageHeaderInfo
+    public static class PackageHeader
     {
         public static void Render(CustomPackageInfo info)
         {

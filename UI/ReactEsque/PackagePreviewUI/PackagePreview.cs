@@ -57,7 +57,7 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
              *      Button that says "Play"
              */
             // Package Header
-            PackageHeaderInfo.Render(packageInfo);
+            PackageHeader.Render(packageInfo);
             // Difficulty Picker
             GUILayout.BeginHorizontal();
                 GUILayout.Label("Difficulty: ");

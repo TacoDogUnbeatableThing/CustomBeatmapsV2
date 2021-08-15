@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CustomBeatmaps.Packages;
+using CustomBeatmaps.UI.ReactEsque.PackageListUI;
 using CustomBeatmaps.UI.ReactEsque.PackagePreviewUI;
 using CustomBeatmaps.UI.Structure;
 using CustomBeatmaps.UISystem;
@@ -95,7 +96,26 @@ namespace CustomBeatmaps.UI.ReactEsque
                 SearchBar.Render(searchQuery, setSearchQuery);
                 GUILayout.BeginHorizontal();
                     // Package List
-                    PackagePicker.Render(packageInfos, selectedPackage, setSelectedPackage);
+                    int pageNumber = (searchQuery.StartPackage / pageSize) + 1;
+                    int totalPages = (totalPackages / pageSize) + 1;
+                    if (totalPackages == 0)
+                    {
+                        pageNumber = 0;
+                        totalPages = 0;
+                    }
+                    PackageListPicker.Render(
+                        packageInfos,
+                        selectedPackage,
+                        setSelectedPackage,
+                        pageNumber,
+                        totalPages,
+                        newPage =>
+                        {
+                            // On new page, change our search query.
+                            int start = newPage * pageSize;
+                            int end = start + pageSize;
+                            setSearchQuery.Invoke(new SearchQuery(searchQuery.TextQuery, searchQuery.Ascending, searchQuery.SortType, start, end));
+                        });
                     // Package Preview
                     if (packageSelected)
                     {
