@@ -55,10 +55,10 @@ namespace CustomBeatmaps.Packages
             switch (sortType)
             {
                 case SortType.Date:
-                    return DateTime.Compare(Convert.ToDateTime(left.PackageInfo.Date),
-                        Convert.ToDateTime(right.PackageInfo.Date));
+                    return DateTime.Compare(Convert.ToDateTime(left.PackageInfo.date),
+                        Convert.ToDateTime(right.PackageInfo.date));
                 case SortType.Name:
-                    return String.CompareOrdinal(left.PackageInfo.PackageName, right.PackageInfo.PackageName);
+                    return String.CompareOrdinal(left.PackageInfo.name, right.PackageInfo.name);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(sortType), sortType, null);
             }

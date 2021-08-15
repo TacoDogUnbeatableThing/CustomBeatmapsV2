@@ -1,34 +1,29 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Rewired.Utils.Libraries.TinyJson;
-using UnityEngine;
 
 namespace CustomBeatmaps.Packages
 {
-    public readonly struct DifficultyInfo
-    {
-        public readonly string Name;
-        public readonly string Creator;
-
-        public DifficultyInfo(string name, string creator)
-        {
-            Name = name;
-            Creator = creator;
-        }
-    }
-
+    // Naming matches database/file naming.
+    // I could use external JSON libraries to rename these, but eh
+    // this is easy for now.
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public readonly struct CustomPackageInfo
     {
-        public readonly string PackageName;
-        public readonly string Date;
-        public readonly DifficultyInfo[] Difficulties;
+        public readonly string name;
+        public readonly string date;
+        public readonly string artist;
+        public readonly Dictionary<string, string> difficulties;
         public readonly UniqueId DatabaseId;
 
-        public CustomPackageInfo(string packageName, string date, DifficultyInfo[] difficulties,
+        public CustomPackageInfo(string name, string date, string artist, Dictionary<string, string> difficulties,
             UniqueId databaseId)
         {
-            PackageName = packageName;
-            Date = date;
-            Difficulties = difficulties;
+            this.name = name;
+            this.date = date;
+            this.artist = artist;
+            this.difficulties = difficulties;
             DatabaseId = databaseId;
         }
 

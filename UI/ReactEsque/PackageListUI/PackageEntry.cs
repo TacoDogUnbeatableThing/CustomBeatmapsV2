@@ -8,7 +8,7 @@ namespace CustomBeatmaps.UI.ReactEsque.PackageListUI
     {
         public static void Render(CustomPackageInfo info, bool selected, Action onClick)
         {
-            string label = $"{info.PackageName}";
+            string label = $"{info.name}";
             if (selected)
             {
                 label = $"<b>{label}</b>";

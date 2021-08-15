@@ -46,8 +46,8 @@ namespace CustomBeatmaps.Packages
                     var id = new UniqueId(packageId);
                     CustomPackageInfo packageInfo = LoadPackageInfo(packageDir);
                     // Copy over id from folder name
-                    packageInfo = new CustomPackageInfo(packageInfo.PackageName, packageInfo.Date,
-                        packageInfo.Difficulties, id);
+                    packageInfo = new CustomPackageInfo(packageInfo.name, packageInfo.date, packageInfo.artist,
+                        packageInfo.difficulties, id);
                     result.Add(id, new CustomPackageLocalData(packageInfo, beatmaps));
                 }
             }

@@ -20,8 +20,8 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
 
             string GetDefaultDifficulty()
             {
-                return packageInfo.Difficulties.Length != 0
-                    ? packageInfo.Difficulties[0].Name
+                return packageInfo.difficulties.Count != 0
+                    ? packageInfo.difficulties.Keys.First()
                     : "(none found)";
             }
 
@@ -55,7 +55,7 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
             {
                 // On package change, update difficulty selection.
                 setSelectedDifficulty.Invoke(GetDefaultDifficulty());
-            }, new object[] {packageInfo.DatabaseId, packageInfo.Difficulties.Length});
+            }, new object[] {packageInfo.DatabaseId, packageInfo.difficulties.Count});
 
             /*
              * Package info header
@@ -76,8 +76,8 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
                     GUILayout.Label("Difficulty: ");
                     Dropdown.Render(
                         selectedDifficulty,
-                        packageInfo.Difficulties.Select(dif => dif.Name).ToList(),
-                        index => setSelectedDifficulty(packageInfo.Difficulties[index].Name),
+                        packageInfo.difficulties.Keys.ToList(),
+                        index => setSelectedDifficulty(packageInfo.difficulties.Keys.ToList()[index]),
                         GUILayout.Width(128));
                 GUILayout.EndHorizontal();
                 // Leaderboard
