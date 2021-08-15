@@ -14,7 +14,8 @@ namespace CustomBeatmaps.UI.ReactEsque.PackageListUI
         {
             (Vector2 scrollPos, var setScrollPos) = Reacc.UseState(Vector2.zero);
 
-            Vector2 newScroll = GUILayout.BeginScrollView(scrollPos);
+            GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
+            Vector2 newScroll = GUILayout.BeginScrollView(scrollPos, GUILayout.ExpandWidth(true));
             setScrollPos.Invoke(newScroll);
             int i = 0;
             foreach (CustomPackageInfo packageInfo in packages)
@@ -27,6 +28,7 @@ namespace CustomBeatmaps.UI.ReactEsque.PackageListUI
             GUILayout.EndScrollView();
 
             PackageListPageSelector.Render(pageNumber, totalPages, setPageNumber);
+            GUILayout.EndVertical();
         }
     }
 }

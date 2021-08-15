@@ -14,7 +14,7 @@ namespace CustomBeatmaps.UI.ReactEsque.PackageListUI
                 label = $"<b>{label}</b>";
             }
 
-            if (GUILayout.Button(label))
+            if (GUILayout.Button(label, GUILayout.ExpandWidth(true)))
             {
                 onClick.Invoke();
             }

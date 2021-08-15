@@ -28,7 +28,6 @@ namespace CustomBeatmaps.Packages
                     var osuFile = fname.Replace("\\", "/");
                     try
                     {
-                        Debug.Log($"Loading Local Package: {osuFile}");
                         var text = File.ReadAllText(osuFile);
                         var beatmap = LoadBeatmap(osuFile, text);
                         beatmaps.Add(beatmap);
@@ -45,7 +44,11 @@ namespace CustomBeatmaps.Packages
                     var packageId = Path.GetFileNameWithoutExtension(packageDir);
                     // Get the id from folder name. Used to reference online stuff.
                     var id = new UniqueId(packageId);
-                    result.Add(id, new CustomPackageLocalData(LoadPackageInfo(packageDir), beatmaps));
+                    CustomPackageInfo packageInfo = LoadPackageInfo(packageDir);
+                    // Copy over id from folder name
+                    packageInfo = new CustomPackageInfo(packageInfo.PackageName, packageInfo.Date,
+                        packageInfo.Difficulties, id);
+                    result.Add(id, new CustomPackageLocalData(packageInfo, beatmaps));
                 }
             }
 
@@ -54,39 +57,30 @@ namespace CustomBeatmaps.Packages
 
         private static CustomPackageInfo LoadPackageInfo(string packageDir)
         {
-            var jsonFile = Path.Join(packageDir, INFO_JSON_NAME);
+            var jsonFile = packageDir + "/" + INFO_JSON_NAME; // Path.Join fails.
             return CustomPackageInfo.Load(jsonFile);
         }
 
-        private static bool TryGetProp(string text, string prop, out string result)
+        private static string GetProp(string text, string prop, string path)
         {
             var match = Regex.Match(text, $"{prop}: *(.+?)\r?\n");
             if (match.Groups.Count > 1)
             {
-                result = match.Groups[1].Value;
-                return true;
+                return match.Groups[1].Value;
             }
-
-            result = null;
-            return false;
+            throw new BeatmapLoadException(path, $"{prop} property not found.");
         }
 
         private static CustomBeatmapInfo LoadBeatmap(string path, string text)
         {
-            string songName, difficulty, artist, beatmapCreator, audioFile;
-            if (!TryGetProp(text, "Title", out songName))
-                throw new BeatmapLoadException(path, "Title property not found.");
-            if (!TryGetProp(text, "Version", out difficulty))
-                throw new BeatmapLoadException(path, "Difficulty property not found.");
-            if (!TryGetProp(text, "Artist", out artist))
-                throw new BeatmapLoadException(path, "Author property not found.");
-            if (!TryGetProp(text, "Creator", out beatmapCreator))
-                throw new BeatmapLoadException(path, "Creator property not found.");
-            if (!TryGetProp(text, "AudioFilename", out audioFile))
-                throw new BeatmapLoadException(path, "AudioFilename property not found.");
+            string songName = GetProp(text, "Title", path);
+            string difficulty = GetProp(text, "Version", path);
+            string artist = GetProp(text, "Artist", path);
+            string beatmapCreator = GetProp(text, "Creator", path);
+            string audioFile = GetProp(text, "AudioFilename", path);
 
             var relPath = Path.GetDirectoryName(path);
-            var trueAudioPath = Path.Join(relPath, audioFile);
+            var trueAudioPath = relPath + "/" + audioFile; // Path.Join fails.
 
             return new CustomBeatmapInfo(new TextAsset(text), songName, difficulty, artist, beatmapCreator,
                 trueAudioPath);

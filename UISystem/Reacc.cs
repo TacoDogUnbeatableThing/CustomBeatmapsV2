@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace CustomBeatmaps.UISystem
 {
@@ -11,12 +12,17 @@ namespace CustomBeatmaps.UISystem
      */
     public static class Reacc
     {
-        private static readonly Dictionary<string, object> States = new Dictionary<string, object>();
-        private static readonly Dictionary<string, object[]> EffectDependencies = new Dictionary<string, object[]>();
+
+        private static ReaccStore _currentStore = new ReaccStore();
 
         private static string GetNewKeyNow(int lineNumber)
         {
             return Environment.StackTrace + $"->{lineNumber}";
+        }
+
+        public static void SetStore(ReaccStore store)
+        {
+            _currentStore = store;
         }
 
         public static int GetUniqueId([CallerLineNumber] int lineNumber = 0)
@@ -34,10 +40,10 @@ namespace CustomBeatmaps.UISystem
         {
             var key = GetNewKeyNow(lineNumber);
 
-            if (!States.ContainsKey(key)) States[key] = getDefaultValue.Invoke();
+            if (!_currentStore.States.ContainsKey(key)) _currentStore.States[key] = getDefaultValue.Invoke();
 
-            var result = (T) States[key];
-            Action<T> setter = t => States[key] = t;
+            var result = (T) _currentStore.States[key];
+            Action<T> setter = t => _currentStore.States[key] = t;
 
             return (result, setter);
         }
@@ -46,14 +52,14 @@ namespace CustomBeatmaps.UISystem
         {
             var key = GetNewKeyNow(lineNumber);
 
-            if (!EffectDependencies.ContainsKey(key))
+            if (!_currentStore.EffectDependencies.ContainsKey(key))
             {
-                EffectDependencies[key] = dependencies;
+                _currentStore.EffectDependencies[key] = dependencies;
                 onChange.Invoke();
             }
             else
             {
-                var oldDeps = EffectDependencies[key];
+                var oldDeps = _currentStore.EffectDependencies[key];
                 if (oldDeps.Length != dependencies.Length)
                     onChange.Invoke();
                 else
@@ -64,7 +70,7 @@ namespace CustomBeatmaps.UISystem
                             break;
                         }
 
-                EffectDependencies[key] = dependencies;
+                _currentStore.EffectDependencies[key] = dependencies;
             }
         }
     }

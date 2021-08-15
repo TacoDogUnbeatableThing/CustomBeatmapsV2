@@ -5,14 +5,19 @@
         // TODO: Discuss local packages w/ Jane
         private static readonly string LOCAL_PREFIX = "LOCAL_";
 
-        public readonly string FolderPath;
+        public readonly string Id;
 
-        public UniqueId(string folderPath)
+        public UniqueId(string id)
         {
-            FolderPath = folderPath;
+            Id = id;
         }
 
-        public bool IsPureLocal => FolderPath.StartsWith(LOCAL_PREFIX);
+        public UniqueId()
+        {
+            Id = "";
+        }
+
+        public bool IsPureLocal => Id.StartsWith(LOCAL_PREFIX);
 
         // TODO: Delete Zombie code
         /*
@@ -25,7 +30,7 @@
 
         protected bool Equals(UniqueId other)
         {
-            return FolderPath == other.FolderPath;
+            return Id == other.Id;
         }
 
         public override bool Equals(object obj)
@@ -38,7 +43,7 @@
 
         public override int GetHashCode()
         {
-            return FolderPath != null ? FolderPath.GetHashCode() : 0;
+            return Id != null ? Id.GetHashCode() : 0;
         }
 
         public static bool operator ==(UniqueId left, UniqueId right)

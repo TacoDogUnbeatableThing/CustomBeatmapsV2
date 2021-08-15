@@ -45,7 +45,7 @@ namespace CustomBeatmaps
 
         private void GetLocalPackageCount(Action<int> getter)
         {
-            getter.Invoke(_packageGrabber.GetLocalPackages().Count);
+            getter.Invoke(_packageGrabber.GetLocalPackageCount());
         }
 
         private void GetOnlinePackageCount(Action<int> getter)
@@ -69,8 +69,8 @@ namespace CustomBeatmaps
 
         private void DoLocalSearch(SearchQuery searchQuery, Action<IList<CustomPackageLocalData>> getter)
         {
-            // TODO: Grab local files as an ICollection, sort them based on query and get 'em
-            throw new NotImplementedException();
+            Debug.Log($"DOING LOCAL SEARCH: [{searchQuery.StartPackage}, {searchQuery.EndPackage}");
+            getter.Invoke(_packageGrabber.GetLocalPackagesSearched(searchQuery));
         }
 
         private void DoOnlineSearch(SearchQuery searchQuery, Action<IList<CustomPackageInfo>> getter)

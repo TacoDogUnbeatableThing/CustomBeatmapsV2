@@ -7,6 +7,7 @@ using CustomBeatmaps.UI.ReactEsque.PackagePreviewUI;
 using CustomBeatmaps.UI.Structure;
 using CustomBeatmaps.UISystem;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace CustomBeatmaps.UI.ReactEsque
 {
@@ -16,6 +17,7 @@ namespace CustomBeatmaps.UI.ReactEsque
         public void Init(CustomBeatmapUIMainProps props)
         {
             _props = props;
+            Object.DontDestroyOnLoad(GameObject);
         }
 
         protected override void OnUnityGUI()
@@ -89,7 +91,8 @@ namespace CustomBeatmaps.UI.ReactEsque
             }, new object[]{online});
 
             // UI
-            Rect centerRect = new Rect(16, 16, Screen.width - 32, Screen.height - 32);
+            int windowPad = 16;
+            Rect centerRect = new Rect(windowPad, windowPad, Screen.width - windowPad*2, Screen.height - windowPad*2);
             GUILayout.Window(Reacc.GetUniqueId(), centerRect, _ =>
             {
                 OnlinePicker.Render(online, setOnline);
@@ -126,7 +129,8 @@ namespace CustomBeatmaps.UI.ReactEsque
                             (difficultyRequested, onGrab) =>
                                 _props.DoLeaderboardSearch.Invoke(currentPackage.DatabaseId, difficultyRequested, onGrab),
                             () => _props.OnDownloadRequest.Invoke(currentPackage.DatabaseId),
-                            difficultyToPlay => _props.OnPlayRequest.Invoke(currentPackage.DatabaseId, difficultyToPlay)
+                            difficultyToPlay => _props.OnPlayRequest.Invoke(currentPackage.DatabaseId, difficultyToPlay),
+                            GUILayout.Width(Screen.width / 2 - windowPad*2)
                             );
                     }
                 GUILayout.EndHorizontal();

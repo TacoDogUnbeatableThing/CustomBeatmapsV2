@@ -4,6 +4,7 @@
     {
         OnlineOnly,
         Downloading,
-        Downloaded
+        Downloaded,
+        Undefined
     }
 }

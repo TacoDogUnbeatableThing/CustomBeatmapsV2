@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Rewired.Utils.Libraries.TinyJson;
+using UnityEngine;
 
 namespace CustomBeatmaps.Packages
 {
@@ -21,21 +22,21 @@ namespace CustomBeatmaps.Packages
         public readonly string Date;
         public readonly DifficultyInfo[] Difficulties;
         public readonly UniqueId DatabaseId;
-        public readonly string FileId;
 
         public CustomPackageInfo(string packageName, string date, DifficultyInfo[] difficulties,
-            UniqueId databaseId, string fileId)
+            UniqueId databaseId)
         {
             PackageName = packageName;
             Date = date;
             Difficulties = difficulties;
             DatabaseId = databaseId;
-            FileId = fileId;
         }
 
         public static CustomPackageInfo Load(string fpath)
         {
-            return JsonParser.FromJson<CustomPackageInfo>(File.ReadAllText(fpath));
+            string text = File.ReadAllText(fpath);
+            CustomPackageInfo result = JsonParser.FromJson<CustomPackageInfo>(text);
+            return result;
         }
 
         public static void Save(CustomPackageInfo data, string fpath)

@@ -1,4 +1,5 @@
 ﻿using CustomBeatmaps.Packages;
+using UnityEngine;
 
 namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
 {
@@ -6,7 +7,9 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
     {
         public static void Render(CustomPackageInfo info)
         {
-            // TODO: Render info
+            // TODO: In the future, an Icon maybe?
+            GUILayout.Label($"Name: {info.PackageName}");
+            GUILayout.Label($"Date: {info.Date}");
         }
     }
 }

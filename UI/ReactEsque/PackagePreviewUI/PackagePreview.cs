@@ -14,12 +14,19 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
             PackageDownloadStatus downloadStatus,
             Action<string, Action<LeaderboardInfo>> doLeaderboardSearch,
             Action onDownloadRequested,
-            Action<string> onDifficultyPlayRequested)
+            Action<string> onDifficultyPlayRequested,
+            params GUILayoutOption[] options)
         {
-            (string selectedDifficulty, var setSelectedDifficulty) = Reacc.UseState(
-                packageInfo.Difficulties.Length != 0
+
+            string GetDefaultDifficulty()
+            {
+                return packageInfo.Difficulties.Length != 0
                     ? packageInfo.Difficulties[0].Name
-                    : "(none found)"
+                    : "(none found)";
+            }
+
+            (string selectedDifficulty, var setSelectedDifficulty) = Reacc.UseState(
+                GetDefaultDifficulty
                 );
             (LeaderboardInfo currentLeaderboard, var setCurrentLeaderboard) = Reacc.UseState(LeaderboardInfo.Empty);
             (bool loadingLeaderboard, var setLoadingLeaderboard) = Reacc.UseState(true);
@@ -44,6 +51,11 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
                     setLoadingLeaderboard(false);
                 }
             }, new object[]{selectedDifficulty});
+            Reacc.UseEffect(() =>
+            {
+                // On package change, update difficulty selection.
+                setSelectedDifficulty.Invoke(GetDefaultDifficulty());
+            }, new object[] {packageInfo.DatabaseId, packageInfo.Difficulties.Length});
 
             /*
              * Package info header
@@ -57,47 +69,50 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
              *      Button that says "Play"
              */
             // Package Header
-            PackageHeader.Render(packageInfo);
-            // Difficulty Picker
-            GUILayout.BeginHorizontal();
-                GUILayout.Label("Difficulty: ");
-                Dropdown.Render(
-                    selectedDifficulty,
-                    packageInfo.Difficulties.Select(dif => dif.Name),
-                    index => setSelectedDifficulty(packageInfo.Difficulties[index].Name));
-            GUILayout.EndHorizontal();
-            // Leaderboard
-            PackageLeaderboard.Render(currentLeaderboard.GetRanks(selectedDifficulty));
+            GUILayout.BeginVertical(options);
+                PackageHeader.Render(packageInfo);
+                // Difficulty Picker
+                GUILayout.BeginHorizontal();
+                    GUILayout.Label("Difficulty: ");
+                    Dropdown.Render(
+                        selectedDifficulty,
+                        packageInfo.Difficulties.Select(dif => dif.Name).ToList(),
+                        index => setSelectedDifficulty(packageInfo.Difficulties[index].Name),
+                        GUILayout.Width(128));
+                GUILayout.EndHorizontal();
+                // Leaderboard
+                PackageLeaderboard.Render(currentLeaderboard.GetRanks(selectedDifficulty));
 
-            GUILayout.FlexibleSpace();
+                GUILayout.FlexibleSpace();
 
-            // Buttons (play & download)
-            switch (downloadStatus)
-            {
-                case PackageDownloadStatus.OnlineOnly:
-                    if (BottomButton("DOWNLOAD"))
-                    {
-                        onDownloadRequested.Invoke();
-                    }
-                    break;
-                case PackageDownloadStatus.Downloading:
-                    AnimatedDownloadText.Render();
-                    break;
-                case PackageDownloadStatus.Downloaded:
-                    if (BottomButton("PLAY"))
-                    {
-                        onDifficultyPlayRequested.Invoke(selectedDifficulty);
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(downloadStatus), downloadStatus, null);
-            }
+                // Buttons (play & download)
+                switch (downloadStatus)
+                {
+                    case PackageDownloadStatus.OnlineOnly:
+                        if (BottomButton("DOWNLOAD"))
+                        {
+                            onDownloadRequested.Invoke();
+                        }
+                        break;
+                    case PackageDownloadStatus.Downloading:
+                        AnimatedDownloadText.Render();
+                        break;
+                    case PackageDownloadStatus.Downloaded:
+                        if (BottomButton("PLAY"))
+                        {
+                            onDifficultyPlayRequested.Invoke(selectedDifficulty);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(downloadStatus), downloadStatus, null);
+                }
+            GUILayout.EndVertical();
         }
 
         private static bool BottomButton(string text)
         {
             // Might add some funky formatting later to make this BIG
-            return GUILayout.Button(text);
+            return GUILayout.Button(text, GUILayout.ExpandWidth(true), GUILayout.MinHeight(64));
         }
     }
 }
