@@ -14,15 +14,31 @@ namespace CustomBeatmaps.UI.ReactEsque
     public class CustomBeatmapUIRenderer : UIRenderer, ICustomBeatmapUIMain
     {
         private CustomBeatmapUIMainProps _props;
+        private ReaccStore _store = new ReaccStore();
         public void Init(CustomBeatmapUIMainProps props)
         {
             _props = props;
-            Object.DontDestroyOnLoad(GameObject);
+            GameObject.SetActive(false);
+        }
+
+        public void Open()
+        {
+            GameObject.SetActive(true);
+        }
+
+        public void Close()
+        {
+            if (GameObject.activeSelf)
+            {
+                GameObject.SetActive(false);
+                // Refresh UI
+                _store = new ReaccStore();
+            }
         }
 
         protected override void OnUnityGUI()
         {
-            // TODO: Render shit.
+            Reacc.SetStore(_store);
             /*
              * State:
              *  - Local/Online mode
@@ -39,6 +55,7 @@ namespace CustomBeatmaps.UI.ReactEsque
              */
 
             // State
+            (bool open, var setOpen) = Reacc.UseState(false);
             (bool online, var setOnline) = Reacc.UseState(false);
             (int pageSize, var setPageSize) = Reacc.UseState(CalculatePageSize);
             (int totalPackages, var setTotalPackages) = Reacc.UseState(0);
@@ -91,13 +108,24 @@ namespace CustomBeatmaps.UI.ReactEsque
             }, new object[]{online});
 
             // UI
-            int windowPad = 16;
-            Rect centerRect = new Rect(windowPad, windowPad, Screen.width - windowPad*2, Screen.height - windowPad*2);
-            GUILayout.Window(Reacc.GetUniqueId(), centerRect, _ =>
+
+            // Toggle button
+            int buttonSize = open ? 64 : 128;
+            if (GUI.Button(new Rect(Screen.width - buttonSize, Screen.height - buttonSize, buttonSize, buttonSize), "Custom"))
             {
-                OnlinePicker.Render(online, setOnline);
-                SearchBar.Render(searchQuery, setSearchQuery);
-                GUILayout.BeginHorizontal();
+                setOpen.Invoke(!open);
+            }
+
+            if (open)
+            {
+                int windowPad = 32;
+                Rect centerRect = new Rect(windowPad, windowPad, Screen.width - windowPad * 2,
+                    Screen.height - windowPad * 2);
+                GUILayout.Window(Reacc.GetUniqueId(), centerRect, _ =>
+                {
+                    OnlinePicker.Render(online, setOnline);
+                    SearchBar.Render(searchQuery, setSearchQuery);
+                    GUILayout.BeginHorizontal();
                     // Package List
                     int pageNumber = (searchQuery.StartPackage / pageSize) + 1;
                     int totalPages = (totalPackages / pageSize) + 1;
@@ -106,6 +134,7 @@ namespace CustomBeatmaps.UI.ReactEsque
                         pageNumber = 0;
                         totalPages = 0;
                     }
+
                     PackageListPicker.Render(
                         packageInfos,
                         selectedPackage,
@@ -117,7 +146,8 @@ namespace CustomBeatmaps.UI.ReactEsque
                             // On new page, change our search query.
                             int start = newPage * pageSize;
                             int end = start + pageSize;
-                            setSearchQuery.Invoke(new SearchQuery(searchQuery.TextQuery, searchQuery.Ascending, searchQuery.SortType, start, end));
+                            setSearchQuery.Invoke(new SearchQuery(searchQuery.TextQuery, searchQuery.Ascending,
+                                searchQuery.SortType, start, end));
                         });
                     // Package Preview
                     if (packageSelected)
@@ -127,14 +157,18 @@ namespace CustomBeatmaps.UI.ReactEsque
                             currentPackage,
                             _props.PackageGrabber.GetDownloadStatus(currentPackage.DatabaseId),
                             (difficultyRequested, onGrab) =>
-                                _props.DoLeaderboardSearch.Invoke(currentPackage.DatabaseId, difficultyRequested, onGrab),
+                                _props.DoLeaderboardSearch.Invoke(currentPackage.DatabaseId, difficultyRequested,
+                                    onGrab),
                             () => _props.OnDownloadRequest.Invoke(currentPackage.DatabaseId),
-                            difficultyToPlay => _props.OnPlayRequest.Invoke(currentPackage.DatabaseId, difficultyToPlay),
-                            GUILayout.Width(Screen.width / 2 - windowPad*2)
-                            );
+                            difficultyToPlay =>
+                                _props.OnPlayRequest.Invoke(currentPackage.DatabaseId, difficultyToPlay),
+                            GUILayout.Width(Screen.width / 2 - windowPad * 2)
+                        );
                     }
-                GUILayout.EndHorizontal();
-            }, "Beatmap Picker");
+
+                    GUILayout.EndHorizontal();
+                }, "Beatmap Picker");
+            }
         }
 
         private int CalculatePageSize()

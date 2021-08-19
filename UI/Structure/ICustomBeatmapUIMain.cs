@@ -7,6 +7,9 @@ namespace CustomBeatmaps.UI.Structure
     public interface ICustomBeatmapUIMain
     {
         void Init(CustomBeatmapUIMainProps props);
+
+        void Open();
+        void Close();
     }
 
     public struct CustomBeatmapUIMainProps

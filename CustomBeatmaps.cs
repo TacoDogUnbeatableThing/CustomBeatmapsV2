@@ -35,20 +35,25 @@ namespace CustomBeatmaps
 
             _packageGrabber = new PackageGrabber(UserPackageDirectory);
 
-            _uiMain = new CustomBeatmapUIRenderer();
-            _uiMain.Init(new CustomBeatmapUIMainProps(
-                _packageGrabber,
-                OnPlayRequest,
-                OnDownloadRequest,
-                DoOnlineSearch,
-                DoLocalSearch,
-                DoLeaderboardSearch,
-                GetOnlinePackageCount,
-                GetLocalPackageCount 
-                ));
-
             Harmony.CreateAndPatchAll(typeof(BeatmapParserLoadOverridePatch));
             Harmony.CreateAndPatchAll(typeof(BeatmapInfoAudioKeyOverridePatch));
+            Harmony.CreateAndPatchAll(typeof(MainMenuLoadPatch));
+
+            MainMenuLoadPatch.OnOpen += () =>
+            {
+                _uiMain = new CustomBeatmapUIRenderer();
+                _uiMain.Init(new CustomBeatmapUIMainProps(
+                    _packageGrabber,
+                    OnPlayRequest,
+                    OnDownloadRequest,
+                    DoOnlineSearch,
+                    DoLocalSearch,
+                    DoLeaderboardSearch,
+                    GetOnlinePackageCount,
+                    GetLocalPackageCount 
+                ));
+                _uiMain.Open();
+            };
         }
 
         private void GetLocalPackageCount(Action<int> getter)
@@ -91,6 +96,7 @@ namespace CustomBeatmaps
         {
             // TODO: If beatmap is not downloaded, download first then play.
             UnbeatableHelper.PlayBeatmap(_packageGrabber.GetLocalBeatmap(id, difficulty));
+            _uiMain?.Close();
         }
 
         public void ShowError(Exception e)
