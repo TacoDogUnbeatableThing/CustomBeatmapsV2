@@ -71,19 +71,27 @@ namespace CustomBeatmaps.Packages
             throw new BeatmapLoadException(path, $"{prop} property not found.");
         }
 
-        private static CustomBeatmapInfo LoadBeatmap(string path, string text)
+        private static CustomBeatmapInfo LoadBeatmap(string bmapPath, string text)
         {
-            string songName = GetProp(text, "Title", path);
-            string difficulty = GetProp(text, "Version", path);
-            string artist = GetProp(text, "Artist", path);
-            string beatmapCreator = GetProp(text, "Creator", path);
-            string audioFile = GetProp(text, "AudioFilename", path);
+            string songName = GetProp(text, "Title", bmapPath);
+            string difficulty = GetProp(text, "Version", bmapPath);
+            string artist = GetProp(text, "Artist", bmapPath);
+            string beatmapCreator = GetProp(text, "Creator", bmapPath);
+            string audioFile = GetProp(text, "AudioFilename", bmapPath);
 
-            var relPath = Path.GetDirectoryName(path);
-            var trueAudioPath = relPath + "/" + audioFile; // Path.Join fails.
+
+            var audioFolder = Path.GetDirectoryName(bmapPath);
+            var trueAudioPath = audioFolder + "/" + audioFile; // Path.Join fails.
+
+            // I could use Path.GetRelativePath but that results in a "MissingMethodException".
+            var audioRelativeToRoot = trueAudioPath.Substring(CustomBeatmaps.UnbeatableDirectory.Length + 1);
+
+            // FMOD can use relative paths for some reason...
+            // I have no clue how Ratismal figured this out, I would never on my own. Big props to them.
+            var relativePath = $"../../{audioRelativeToRoot}".Replace('\\', '/');
 
             return new CustomBeatmapInfo(new TextAsset(text), songName, difficulty, artist, beatmapCreator,
-                trueAudioPath);
+                relativePath);
         }
 
         public static void ListenToLocalChanges(string rootDirectory, Action onChange)

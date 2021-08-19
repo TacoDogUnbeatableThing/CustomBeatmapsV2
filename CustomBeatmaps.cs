@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using BepInEx;
 using CustomBeatmaps.Packages;
+using CustomBeatmaps.Patches;
 using CustomBeatmaps.UI.ReactEsque;
 using CustomBeatmaps.UI.Structure;
+using HarmonyLib;
 using UnityEngine;
 
 namespace CustomBeatmaps
@@ -20,8 +22,11 @@ namespace CustomBeatmaps
         private ICustomBeatmapUIMain _uiMain;
 
         private string UserPackageDirectory =>
-            $"{Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/'))}/{BEATMAP_RELPATH}";
+            $"{UnbeatableDirectory}/{BEATMAP_RELPATH}";
 
+        public static string UnbeatableDirectory =>
+            Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')).Replace('\\', '/');
+        
         private void Awake()
         {
             Instance = this;
@@ -41,6 +46,9 @@ namespace CustomBeatmaps
                 GetOnlinePackageCount,
                 GetLocalPackageCount 
                 ));
+
+            Harmony.CreateAndPatchAll(typeof(BeatmapParserLoadOverridePatch));
+            Harmony.CreateAndPatchAll(typeof(BeatmapInfoAudioKeyOverridePatch));
         }
 
         private void GetLocalPackageCount(Action<int> getter)
@@ -81,9 +89,8 @@ namespace CustomBeatmaps
 
         private void OnPlayRequest(UniqueId id, string difficulty)
         {
-            // TODO: make a BeatmapPlayer object, and tell it that we want to play this beatmap.
-            //      If it's not downloaded, start a download and play afterwards!
-            throw new NotImplementedException();
+            // TODO: If beatmap is not downloaded, download first then play.
+            UnbeatableHelper.PlayBeatmap(_packageGrabber.GetLocalBeatmap(id, difficulty));
         }
 
         public void ShowError(Exception e)

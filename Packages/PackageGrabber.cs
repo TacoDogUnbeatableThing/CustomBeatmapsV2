@@ -64,6 +64,16 @@ namespace CustomBeatmaps.Packages
             }
         }
 
+        public CustomBeatmapInfo GetLocalBeatmap(UniqueId id, string difficulty)
+        {
+            if (_localPackages.ContainsKey(id))
+            {
+                CustomPackageLocalData dat = _localPackages[id];
+                return dat.Beatmaps.Find(info => info.difficulty.Equals(difficulty));
+            }
+            return null;
+        }
+        
         public PackageDownloadStatus GetDownloadStatus(UniqueId onlineId)
         {
             if (onlineId == null)
