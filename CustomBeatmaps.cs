@@ -90,7 +90,7 @@ namespace CustomBeatmaps
             throw new NotImplementedException();
         }
 
-        private void DoLocalSearch(SearchQuery searchQuery, Action<IList<CustomPackageLocalData>> getter)
+        private void DoLocalSearch(SearchQuery searchQuery, Action<IList<CustomPackageInfo>> getter)
         {
             Debug.Log($"DOING LOCAL SEARCH: [{searchQuery.StartPackage}, {searchQuery.EndPackage}");
             getter.Invoke(_packageGrabber.GetLocalPackagesSearched(searchQuery));

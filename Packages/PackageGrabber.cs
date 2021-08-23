@@ -46,30 +46,35 @@ namespace CustomBeatmaps.Packages
             return _localPackages.Count;
         }
 
-        public List<CustomPackageLocalData> GetLocalPackagesSearched(SearchQuery searchQuery)
+        public List<CustomPackageInfo> GetLocalPackagesSearched(SearchQuery searchQuery)
         {
             EnsureUpdated();
 
             // Sort packages by search query and return our segment.
-            List<CustomPackageLocalData> list = _localPackages.Values.ToList();
-            list.Sort((left, right) => Comparison(left, right, searchQuery.SortType));
-            if (!searchQuery.Ascending)
-            {
-                list.Reverse();
-            }
-
-            return list.Skip(searchQuery.StartPackage).Take(searchQuery.EndPackage - searchQuery.StartPackage).ToList();
+            return GetListPackagesSearched(_localPackages.Values.Select(package => package.PackageInfo).ToList(), searchQuery);
         }
 
-        private int Comparison(CustomPackageLocalData left, CustomPackageLocalData right, SortType sortType)
+        private List<CustomPackageInfo> GetListPackagesSearched(List<CustomPackageInfo> everything,
+            SearchQuery searchQuery)
+        {
+            everything.Sort((left, right) => Comparison(left, right, searchQuery.SortType));
+            if (!searchQuery.Ascending)
+            {
+                everything.Reverse();
+            }
+
+            return everything.Skip(searchQuery.StartPackage).Take(searchQuery.EndPackage - searchQuery.StartPackage).ToList();
+        }
+
+        private int Comparison(CustomPackageInfo left, CustomPackageInfo right, SortType sortType)
         {
             switch (sortType)
             {
                 case SortType.Date:
-                    return DateTime.Compare(Convert.ToDateTime(left.PackageInfo.date),
-                        Convert.ToDateTime(right.PackageInfo.date));
+                    return DateTime.Compare(Convert.ToDateTime(left.date),
+                        Convert.ToDateTime(right.date));
                 case SortType.Name:
-                    return String.CompareOrdinal(left.PackageInfo.name, right.PackageInfo.name);
+                    return String.CompareOrdinal(left.name, right.name);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(sortType), sortType, null);
             }

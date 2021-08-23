@@ -90,11 +90,7 @@ namespace CustomBeatmaps.UI.ReactEsque
                 }
                 else
                 {
-                    _props.DoLocalSearch.Invoke(searchQuery,
-                        localList =>
-                        {
-                            SetPackageInfoLoaded(localList.Select(local => local.PackageInfo).ToList());
-                        });
+                    _props.DoLocalSearch.Invoke(searchQuery, SetPackageInfoLoaded);
                 }
             }, new object[]{searchQuery, online});
             Reacc.UseEffect(() =>
@@ -118,11 +114,7 @@ namespace CustomBeatmaps.UI.ReactEsque
                     // We're out of sync!
                     // Reload locally.
                     _props.GetLocalPackageCount.Invoke(setTotalPackages);
-                    _props.DoLocalSearch.Invoke(searchQuery,
-                        localList =>
-                        {
-                            SetPackageInfoLoaded(localList.Select(local => local.PackageInfo).ToList());
-                        });
+                    _props.DoLocalSearch.Invoke(searchQuery, SetPackageInfoLoaded);
                 }
             }, new object[]{_props.PackageGrabber.LocalOutOfSync});
 
