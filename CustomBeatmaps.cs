@@ -42,6 +42,7 @@ namespace CustomBeatmaps
             Harmony.CreateAndPatchAll(typeof(BeatmapParserLoadOverridePatch));
             Harmony.CreateAndPatchAll(typeof(BeatmapInfoAudioKeyOverridePatch));
             Harmony.CreateAndPatchAll(typeof(MainMenuLoadPatch));
+            Harmony.CreateAndPatchAll(typeof(MemorySkipAfterCustomBeatmapPatch));
 
             MainMenuLoadPatch.OnOpen += () =>
             {
