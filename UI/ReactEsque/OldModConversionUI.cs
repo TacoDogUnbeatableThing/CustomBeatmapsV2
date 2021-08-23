@@ -36,8 +36,13 @@ namespace CustomBeatmaps.UI.ReactEsque
                     setForceMove(GUILayout.Toggle(forceMove, "Don't Copy (Just Move)", GUILayout.ExpandWidth(true)));
                     if (GUILayout.Button("CONVERT", GUILayout.ExpandWidth(true)))
                     {
-                        setMessage("...Converting...");
-                        onRun.Invoke(forceMove, setMessage);
+                        setMessage("...Converting...\n");
+                        onRun.Invoke(forceMove, log =>
+                        {
+                            // Kinda jank?
+                            message += log + "\n";
+                            setMessage(message);
+                        });
                     }
                 }
             }, "Old Beatmap Converter");

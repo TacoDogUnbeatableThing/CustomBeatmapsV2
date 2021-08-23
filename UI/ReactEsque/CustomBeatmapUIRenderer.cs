@@ -151,9 +151,9 @@ namespace CustomBeatmaps.UI.ReactEsque
             if (oldMapConversionOpen)
             {
                 OldModConversionUI.Render(
-                    (forceMove, onSetMessage) =>
+                    (forceMove, onLog) =>
                     {
-                        _props.DoConvertOldBeatmaps(forceMove, onSetMessage);
+                        _props.DoConvertOldBeatmaps(forceMove, onLog);
                         setOldMapsDetected.Invoke(false);
                     }, () => setOldMapConversionOpen.Invoke(false));
             }

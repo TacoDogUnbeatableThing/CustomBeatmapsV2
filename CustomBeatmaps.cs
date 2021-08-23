@@ -56,9 +56,9 @@ namespace CustomBeatmaps
                     GetOnlinePackageCount,
                     GetLocalPackageCount,
                     _oldModConverter.DetectOldBeatmaps(),
-                    (moveDontCopy, onConvert) =>
+                    (moveDontCopy, onLog) =>
                     {
-                        onConvert(_oldModConverter.ConvertFiles(moveDontCopy));
+                        _oldModConverter.ConvertFiles(moveDontCopy, onLog);
                     }
                 ));
                 _uiMain.Open();
