@@ -64,9 +64,11 @@ namespace CustomBeatmaps.UI.ReactEsque
                 Reacc.UseState(() => new List<CustomPackageInfo>());
             (int selectedPackage, var setSelectedPackage) = Reacc.UseState(-1);
             (bool loading, var setLoading) = Reacc.UseState(true);
+            (bool oldMapConversionOpen, var setOldMapConversionOpen) = Reacc.UseState(false);
+            (bool oldMapsDetected, var setOldMapsDetected) = Reacc.UseState(_props.OldBeatmapsDetected);
 
             bool packageSelected = selectedPackage != -1;
-            
+
             // (On Packages Loaded)
             void SetPackageInfoLoaded(ICollection<CustomPackageInfo> data)
             {
@@ -80,7 +82,7 @@ namespace CustomBeatmaps.UI.ReactEsque
             Reacc.UseEffect(() =>
             {
                 // When our query changes or we switch modes, reload.
-                Debug.Log($"RELOADING BEATMAPS: {(online? "ONLINE" : "LOCAL")}");
+                Debug.Log($"RELOADING BEATMAPS: {(online ? "ONLINE" : "LOCAL")}");
                 setLoading(true);
                 if (online)
                 {
@@ -88,10 +90,11 @@ namespace CustomBeatmaps.UI.ReactEsque
                 }
                 else
                 {
-                    _props.DoLocalSearch.Invoke(searchQuery, localList =>
-                    {
-                        SetPackageInfoLoaded(localList.Select(local => local.PackageInfo).ToList());
-                    });
+                    _props.DoLocalSearch.Invoke(searchQuery,
+                        localList =>
+                        {
+                            SetPackageInfoLoaded(localList.Select(local => local.PackageInfo).ToList());
+                        });
                 }
             }, new object[]{searchQuery, online});
             Reacc.UseEffect(() =>
@@ -107,6 +110,22 @@ namespace CustomBeatmaps.UI.ReactEsque
                 }
             }, new object[]{online});
 
+            // On local file update, reload
+            Reacc.UseEffect(() =>
+            {
+                if (_props.PackageGrabber.LocalOutOfSync)
+                {
+                    // We're out of sync!
+                    // Reload locally.
+                    _props.GetLocalPackageCount.Invoke(setTotalPackages);
+                    _props.DoLocalSearch.Invoke(searchQuery,
+                        localList =>
+                        {
+                            SetPackageInfoLoaded(localList.Select(local => local.PackageInfo).ToList());
+                        });
+                }
+            }, new object[]{_props.PackageGrabber.LocalOutOfSync});
+
             // UI
 
             // Toggle button
@@ -116,7 +135,30 @@ namespace CustomBeatmaps.UI.ReactEsque
                 setOpen.Invoke(!open);
             }
 
-            if (open)
+            // Old beatmap conversions
+            if (oldMapsDetected)
+            {
+                float left = Screen.width - buttonSize * 2 + 8;
+                GUI.Label(new Rect(left, Screen.height - buttonSize - 18, 1000, 18), "OLD Beatmaps Detected!" );
+                if (GUI.Button(
+                    new Rect(left, Screen.height - buttonSize, buttonSize, buttonSize),
+                    "CONVERT\nOLD"))
+                {
+                    setOldMapConversionOpen(!oldMapConversionOpen);
+                }
+            }
+
+            if (oldMapConversionOpen)
+            {
+                OldModConversionUI.Render(
+                    (forceMove, onSetMessage) =>
+                    {
+                        _props.DoConvertOldBeatmaps(forceMove, onSetMessage);
+                        setOldMapsDetected.Invoke(false);
+                    }, () => setOldMapConversionOpen.Invoke(false));
+            }
+
+            if (open && !oldMapConversionOpen)
             {
                 int windowPad = 32;
                 Rect centerRect = new Rect(windowPad, windowPad, Screen.width - windowPad * 2,

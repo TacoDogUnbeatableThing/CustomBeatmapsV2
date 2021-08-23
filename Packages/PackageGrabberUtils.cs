@@ -61,9 +61,9 @@ namespace CustomBeatmaps.Packages
             return CustomPackageInfo.Load(jsonFile);
         }
 
-        private static string GetProp(string text, string prop, string path)
+        public static string GetBeatmapProp(string beatmapText, string prop, string path)
         {
-            var match = Regex.Match(text, $"{prop}: *(.+?)\r?\n");
+            var match = Regex.Match(beatmapText, $"{prop}: *(.+?)\r?\n");
             if (match.Groups.Count > 1)
             {
                 return match.Groups[1].Value;
@@ -73,11 +73,11 @@ namespace CustomBeatmaps.Packages
 
         private static CustomBeatmapInfo LoadBeatmap(string bmapPath, string text)
         {
-            string songName = GetProp(text, "Title", bmapPath);
-            string difficulty = GetProp(text, "Version", bmapPath);
-            string artist = GetProp(text, "Artist", bmapPath);
-            string beatmapCreator = GetProp(text, "Creator", bmapPath);
-            string audioFile = GetProp(text, "AudioFilename", bmapPath);
+            string songName = GetBeatmapProp(text, "Title", bmapPath);
+            string difficulty = GetBeatmapProp(text, "Version", bmapPath);
+            string artist = GetBeatmapProp(text, "Artist", bmapPath);
+            string beatmapCreator = GetBeatmapProp(text, "Creator", bmapPath);
+            string audioFile = GetBeatmapProp(text, "AudioFilename", bmapPath);
 
 
             var audioFolder = Path.GetDirectoryName(bmapPath);
@@ -105,11 +105,14 @@ namespace CustomBeatmaps.Packages
                     NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
                                    NotifyFilters.FileName
                                    | NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size,
-                    EnableRaisingEvents = true
+                    EnableRaisingEvents = true,
+                    Filter = "*",
+                    IncludeSubdirectories = true
                 };
-                fileWatcher.IncludeSubdirectories = true;
                 fileWatcher.Changed += (sender, args) => onChange.Invoke();
                 fileWatcher.Created += (sender, args) => onChange.Invoke();
+                fileWatcher.Deleted += (sender, args) => onChange.Invoke();
+                fileWatcher.Renamed += (sender, args) => onChange.Invoke();
             }
             catch (ArgumentException e)
             {

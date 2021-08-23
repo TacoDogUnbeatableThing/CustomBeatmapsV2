@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using CustomBeatmaps.UI.Structure;
 using UnityEngine;
@@ -22,11 +23,21 @@ namespace CustomBeatmaps.Packages
 
         private bool _updated;
 
+        public bool LocalOutOfSync => !_updated;
+
         public PackageGrabber(string localPackagesDirectory)
         {
             _localPackagesDirectory = localPackagesDirectory;
+            if (!Directory.Exists(localPackagesDirectory))
+            {
+                Directory.CreateDirectory(localPackagesDirectory);
+            }
             // If any file gets updated locally, mark the local cache as dirty.
-            PackageGrabberUtils.ListenToLocalChanges(_localPackagesDirectory, () => _updated = false);
+            PackageGrabberUtils.ListenToLocalChanges(_localPackagesDirectory, () =>
+            {
+                Console.WriteLine("Local Packages CHANGE DETECTED!");
+                _updated = false;
+            });
         }
 
         public int GetLocalPackageCount()
@@ -73,9 +84,10 @@ namespace CustomBeatmaps.Packages
             }
             return null;
         }
-        
+
         public PackageDownloadStatus GetDownloadStatus(UniqueId onlineId)
         {
+            EnsureUpdated();
             if (onlineId == null)
             {
                 return PackageDownloadStatus.Undefined;

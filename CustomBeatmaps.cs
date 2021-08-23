@@ -19,6 +19,8 @@ namespace CustomBeatmaps
 
         private PackageGrabber _packageGrabber;
 
+        private OldModConverter _oldModConverter;
+
         private ICustomBeatmapUIMain _uiMain;
 
         private string UserPackageDirectory =>
@@ -26,7 +28,7 @@ namespace CustomBeatmaps
 
         public static string UnbeatableDirectory =>
             Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')).Replace('\\', '/');
-        
+
         private void Awake()
         {
             Instance = this;
@@ -34,6 +36,8 @@ namespace CustomBeatmaps
             SetCustomGUISkin();
 
             _packageGrabber = new PackageGrabber(UserPackageDirectory);
+
+            _oldModConverter = new OldModConverter(UserPackageDirectory, "USER_BEATMAPS", ".conversions");
 
             Harmony.CreateAndPatchAll(typeof(BeatmapParserLoadOverridePatch));
             Harmony.CreateAndPatchAll(typeof(BeatmapInfoAudioKeyOverridePatch));
@@ -50,7 +54,12 @@ namespace CustomBeatmaps
                     DoLocalSearch,
                     DoLeaderboardSearch,
                     GetOnlinePackageCount,
-                    GetLocalPackageCount 
+                    GetLocalPackageCount,
+                    _oldModConverter.DetectOldBeatmaps(),
+                    (moveDontCopy, onConvert) =>
+                    {
+                        onConvert(_oldModConverter.ConvertFiles(moveDontCopy));
+                    }
                 ));
                 _uiMain.Open();
             };
