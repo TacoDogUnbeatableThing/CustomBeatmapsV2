@@ -17,11 +17,19 @@ namespace CustomBeatmaps
 
         private static readonly string BEATMAP_RELPATH = "USER_PACKAGES";
 
+        private static readonly string SETTINGS_RELPATH = "CustomBeatmapSettings.json";
+
+        private static readonly string LOCAL_TEMP_MP3_RELPATH = ".osu_edit_temp.mp3";
+
         private PackageGrabber _packageGrabber;
 
         private OldModConverter _oldModConverter;
 
         private ICustomBeatmapUIMain _uiMain;
+
+        private TemporaryCopiedFile _localTempMp3File;
+
+        private Settings _settings;
 
         private string UserPackageDirectory =>
             $"{UnbeatableDirectory}/{BEATMAP_RELPATH}";
@@ -36,8 +44,16 @@ namespace CustomBeatmaps
             SetCustomGUISkin();
 
             _packageGrabber = new PackageGrabber(UserPackageDirectory);
-
             _oldModConverter = new OldModConverter(UserPackageDirectory, "USER_BEATMAPS", ".conversions");
+            _localTempMp3File = new TemporaryCopiedFile(LOCAL_TEMP_MP3_RELPATH);
+            _localTempMp3File.Cleanup();
+
+            _settings = Settings.Load(SETTINGS_RELPATH);
+            FileWatchHelper.WatchFileForModifications(SETTINGS_RELPATH, path =>
+            {
+                Console.WriteLine("RELOADING SETTINGS");
+                _settings = Settings.Load(path);
+            });
 
             Harmony.CreateAndPatchAll(typeof(BeatmapParserLoadOverridePatch));
             Harmony.CreateAndPatchAll(typeof(BeatmapInfoAudioKeyOverridePatch));
@@ -57,15 +73,46 @@ namespace CustomBeatmaps
                     GetOnlinePackageCount,
                     GetLocalPackageCount,
                     _oldModConverter.DetectOldBeatmaps(),
-                    (moveDontCopy, onLog) =>
-                    {
-                        _oldModConverter.ConvertFiles(moveDontCopy, onLog);
-                    }
+                    DoConvertOldBeatmaps,
+                    DoOsuLocalSearch,
+                    OnEditOsuMap
                 ));
                 _uiMain.Open();
+                // Some extra cleanup never hurt nobody
+                _localTempMp3File.Cleanup();
                 // We're no longer loading a custom beatmap if we're in the main menu.
                 BeatmapParserLoadOverridePatch.ResetOverrideBeatmap();
             };
+        }
+
+        private void DoConvertOldBeatmaps(bool moveDontCopy, Action<string> onLog)
+        {
+            _oldModConverter.ConvertFiles(moveDontCopy, onLog);
+        }
+
+        private void OnEditOsuMap(string beatmapPath)
+        {
+            // Make a copy of our Mp3 locally and set that local path as the audio key.
+            var bmap = PackageHelper.LoadBeatmap(beatmapPath);
+            string fullAudioPath = bmap.RealAudioKey;
+            string localMp3 = $"../../{_localTempMp3File.CopyNewFile(fullAudioPath)}";
+            Debug.Log($"OPENING (full Audio: {fullAudioPath} -> {localMp3}");
+            bmap.RealAudioKey = localMp3;
+            UnbeatableHelper.PlayBeatmap(bmap, true);
+        }
+
+        private void DoOsuLocalSearch(Action<string[]> onSearch, Action<string> onFail)
+        {
+            string[] osuBeatmaps;
+            if (OsuHelper.GetOsuBeatmaps(_settings.OsuSongPathOverride, out osuBeatmaps))
+            {
+                onSearch.Invoke(osuBeatmaps);
+            }
+            else
+            {
+                onFail.Invoke($"Failed to find beatmaps at {OsuHelper.GetOsuPath(_settings.OsuSongPathOverride)}." +
+                              $" You may override this setting by editing {SETTINGS_RELPATH}.");
+            }
         }
 
         private void GetLocalPackageCount(Action<int> getter)

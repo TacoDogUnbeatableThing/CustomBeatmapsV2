@@ -33,7 +33,7 @@ namespace CustomBeatmaps.Packages
                 Directory.CreateDirectory(localPackagesDirectory);
             }
             // If any file gets updated locally, mark the local cache as dirty.
-            PackageGrabberUtils.ListenToLocalChanges(_localPackagesDirectory, () =>
+            PackageHelper.ListenToLocalChanges(_localPackagesDirectory, () =>
             {
                 Console.WriteLine("Local Packages CHANGE DETECTED!");
                 _updated = false;
@@ -82,6 +82,7 @@ namespace CustomBeatmaps.Packages
 
         public CustomBeatmapInfo GetLocalBeatmap(UniqueId id, string difficulty)
         {
+            EnsureUpdated();
             if (_localPackages.ContainsKey(id))
             {
                 CustomPackageLocalData dat = _localPackages[id];
@@ -109,7 +110,7 @@ namespace CustomBeatmaps.Packages
 
         private void ReloadLocalPackages()
         {
-            _localPackages = PackageGrabberUtils.LoadLocalCustomPackages(_localPackagesDirectory);
+            _localPackages = PackageHelper.LoadLocalCustomPackages(_localPackagesDirectory);
             _updated = true;
         }
     }

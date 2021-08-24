@@ -56,7 +56,7 @@ namespace CustomBeatmaps.UI.ReactEsque
 
             // State
             (bool open, var setOpen) = Reacc.UseState(false);
-            (bool online, var setOnline) = Reacc.UseState(false);
+            (PackageMode packageMode, var setPackageMode) = Reacc.UseState(PackageMode.Local);
             (int pageSize, var setPageSize) = Reacc.UseState(CalculatePageSize);
             (int totalPackages, var setTotalPackages) = Reacc.UseState(0);
             (SearchQuery searchQuery, var setSearchQuery) = Reacc.UseState(() => new SearchQuery("", true, SortType.Date, 0, pageSize));
@@ -66,6 +66,8 @@ namespace CustomBeatmaps.UI.ReactEsque
             (bool loading, var setLoading) = Reacc.UseState(true);
             (bool oldMapConversionOpen, var setOldMapConversionOpen) = Reacc.UseState(false);
             (bool oldMapsDetected, var setOldMapsDetected) = Reacc.UseState(_props.OldBeatmapsDetected);
+            (string[] osuMaps, var setOsuMaps) = Reacc.UseState(new string[0]);
+            (string osuError, var setOsuError) = Reacc.UseState("");
 
             bool packageSelected = selectedPackage != -1;
 
@@ -82,32 +84,43 @@ namespace CustomBeatmaps.UI.ReactEsque
             Reacc.UseEffect(() =>
             {
                 // When our query changes or we switch modes, reload.
-                Debug.Log($"RELOADING BEATMAPS: {(online ? "ONLINE" : "LOCAL")}");
+                Debug.Log($"RELOADING BEATMAPS: {packageMode}");
                 setLoading(true);
                 // Reset package list to be empty
                 setPackageInfos.Invoke(new List<CustomPackageInfo>());
                 setSelectedPackage(-1);
-                if (online)
+                if (packageMode == PackageMode.Online)
                 {
                     _props.DoOnlineSearch.Invoke(searchQuery, SetPackageInfoLoaded);
                 }
-                else
+                else if (packageMode == PackageMode.Local)
                 {
                     _props.DoLocalSearch.Invoke(searchQuery, SetPackageInfoLoaded);
                 }
-            }, new object[]{searchQuery, online});
+            }, new object[]{searchQuery, packageMode});
             Reacc.UseEffect(() =>
             {
                 // When we switch from online mode to offline mode, reload our total "count"
-                if (online)
+                if (packageMode == PackageMode.Online)
                 {
                     _props.GetOnlinePackageCount.Invoke(setTotalPackages);
                 }
-                else
+                else if (packageMode == PackageMode.Local)
                 {
                     _props.GetLocalPackageCount.Invoke(setTotalPackages);
                 }
-            }, new object[]{online});
+            }, new object[]{packageMode});
+            Reacc.UseEffect(() =>
+            {
+                if (packageMode == PackageMode.Osu)
+                {
+                    _props.DoOsuLocalSearch.Invoke(maps =>
+                    {
+                        setOsuMaps.Invoke(maps);
+                        setOsuError.Invoke("");
+                    }, setOsuError);
+                }
+            }, new object[]{packageMode});
 
             // On local file update, reload
             Reacc.UseEffect(() =>
@@ -160,10 +173,10 @@ namespace CustomBeatmaps.UI.ReactEsque
                     Screen.height - windowPad * 2);
                 GUILayout.Window(Reacc.GetUniqueId(), centerRect, _ =>
                 {
-                    OnlinePicker.Render(online, setOnline);
+                    PackageModePicker.Render(packageMode, setPackageMode);
                     SearchBar.Render(searchQuery, setSearchQuery);
 
-                    if (online)
+                    if (packageMode == PackageMode.Online)
                     {
                         GUILayout.Label("(Online mode coming soon!)");
                     }
@@ -178,35 +191,44 @@ namespace CustomBeatmaps.UI.ReactEsque
                         totalPages = 0;
                     }
 
-                    PackageListPicker.Render(
-                        packageInfos,
-                        selectedPackage,
-                        setSelectedPackage,
-                        pageNumber,
-                        totalPages,
-                        newPage =>
-                        {
-                            // On new page, change our search query.
-                            int start = newPage * pageSize;
-                            int end = start + pageSize;
-                            setSearchQuery.Invoke(new SearchQuery(searchQuery.TextQuery, searchQuery.Ascending,
-                                searchQuery.SortType, start, end));
-                        });
-                    // Package Preview
-                    if (packageSelected)
+                    switch (packageMode)
                     {
-                        CustomPackageInfo currentPackage = packageInfos[selectedPackage];
-                        PackagePreview.Render(
-                            currentPackage,
-                            _props.PackageGrabber.GetDownloadStatus(currentPackage.DatabaseId),
-                            (difficultyRequested, onGrab) =>
-                                _props.DoLeaderboardSearch.Invoke(currentPackage.DatabaseId, difficultyRequested,
-                                    onGrab),
-                            () => _props.OnDownloadRequest.Invoke(currentPackage.DatabaseId),
-                            difficultyToPlay =>
-                                _props.OnPlayRequest.Invoke(currentPackage.DatabaseId, difficultyToPlay),
-                            GUILayout.Width(Screen.width / 2 - windowPad * 2)
-                        );
+                        case PackageMode.Local:
+                        case PackageMode.Online:
+                            PackageListPicker.Render(
+                                packageInfos,
+                                selectedPackage,
+                                setSelectedPackage,
+                                pageNumber,
+                                totalPages,
+                                newPage =>
+                                {
+                                    // On new page, change our search query.
+                                    int start = newPage * pageSize;
+                                    int end = start + pageSize;
+                                    setSearchQuery.Invoke(new SearchQuery(searchQuery.TextQuery, searchQuery.Ascending,
+                                        searchQuery.SortType, start, end));
+                                });
+                            // Package Preview
+                            if (packageSelected)
+                            {
+                                CustomPackageInfo currentPackage = packageInfos[selectedPackage];
+                                PackagePreview.Render(
+                                    currentPackage,
+                                    _props.PackageGrabber.GetDownloadStatus(currentPackage.DatabaseId),
+                                    (difficultyRequested, onGrab) =>
+                                        _props.DoLeaderboardSearch.Invoke(currentPackage.DatabaseId, difficultyRequested,
+                                            onGrab),
+                                    () => _props.OnDownloadRequest.Invoke(currentPackage.DatabaseId),
+                                    difficultyToPlay =>
+                                        _props.OnPlayRequest.Invoke(currentPackage.DatabaseId, difficultyToPlay),
+                                    GUILayout.Width(Screen.width / 2 - windowPad * 2)
+                                );
+                            }
+                            break;
+                        case PackageMode.Osu:
+                            OSUPackagePicker.Render(osuMaps, _props.OnEditOsuMap, osuError);
+                            break;
                     }
 
                     GUILayout.EndHorizontal();
