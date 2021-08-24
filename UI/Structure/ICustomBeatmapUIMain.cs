@@ -24,8 +24,10 @@ namespace CustomBeatmaps.UI.Structure
         public Action<Action<int>> GetLocalPackageCount;
         public bool OldBeatmapsDetected;
         public Action<bool, Action<string>> DoConvertOldBeatmaps;
+        public Action<Action<string[]>, Action<string>> DoOsuLocalSearch;
+        public Action<string> OnEditOsuMap;
 
-        public CustomBeatmapUIMainProps(PackageGrabber packageGrabber, Action<UniqueId, string> onPlayRequest, Action<UniqueId> onDownloadRequest, Action<SearchQuery, Action<IList<CustomPackageInfo>>> doOnlineSearch, Action<SearchQuery, Action<IList<CustomPackageInfo>>> doLocalSearch, Action<UniqueId, string, Action<LeaderboardInfo>> doLeaderboardSearch, Action<Action<int>> getOnlinePackageCount, Action<Action<int>> getLocalPackageCount, bool oldBeatmapsDetected, Action<bool, Action<string>> doConvertOldBeatmaps)
+        public CustomBeatmapUIMainProps(PackageGrabber packageGrabber, Action<UniqueId, string> onPlayRequest, Action<UniqueId> onDownloadRequest, Action<SearchQuery, Action<IList<CustomPackageInfo>>> doOnlineSearch, Action<SearchQuery, Action<IList<CustomPackageInfo>>> doLocalSearch, Action<UniqueId, string, Action<LeaderboardInfo>> doLeaderboardSearch, Action<Action<int>> getOnlinePackageCount, Action<Action<int>> getLocalPackageCount, bool oldBeatmapsDetected, Action<bool, Action<string>> doConvertOldBeatmaps, Action<Action<string[]>, Action<string>> doOsuLocalSearch, Action<string> onEditOsuMap)
         {
             PackageGrabber = packageGrabber;
             OnPlayRequest = onPlayRequest;
@@ -37,6 +39,8 @@ namespace CustomBeatmaps.UI.Structure
             GetLocalPackageCount = getLocalPackageCount;
             OldBeatmapsDetected = oldBeatmapsDetected;
             DoConvertOldBeatmaps = doConvertOldBeatmaps;
+            DoOsuLocalSearch = doOsuLocalSearch;
+            OnEditOsuMap = onEditOsuMap;
         }
     }
 }
