@@ -96,7 +96,7 @@ namespace CustomBeatmaps
             string localMp3 = $"../../{_localTempMp3File.CopyNewFile(fullAudioPath)}";
             Debug.Log($"OPENING (full Audio: {fullAudioPath} -> {localMp3}");
             bmap.RealAudioKey = localMp3;
-            UnbeatableHelper.PlayBeatmap(bmap, true);
+            UnbeatableHelper.PlayBeatmapEdit(bmap, beatmapPath);
         }
 
         private void DoOsuLocalSearch(Action<string[]> onSearch, Action<string> onFail)

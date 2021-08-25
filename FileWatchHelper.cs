@@ -6,7 +6,7 @@ namespace CustomBeatmaps
     public static class FileWatchHelper
     {
 
-        public static void WatchFile(string fpath, Action onChange)
+        public static FileSystemWatcher WatchFile(string fpath, Action<string> onChange)
         {
             var fileWatcher = new FileSystemWatcher
             {
@@ -18,10 +18,23 @@ namespace CustomBeatmaps
                 Filter = fpath,
                 IncludeSubdirectories = false
             };
-            fileWatcher.Changed += (sender, args) => onChange.Invoke();
-            fileWatcher.Created += (sender, args) => onChange.Invoke();
-            fileWatcher.Deleted += (sender, args) => onChange.Invoke();
-            fileWatcher.Renamed += (sender, args) => onChange.Invoke();
+
+            FileSystemEventHandler Do = (sender, args) =>
+            {
+                string path = args.FullPath.Replace('\\', '/');
+                string fullPath = Path.GetFullPath(fpath).Replace('\\', '/');
+                if (path == fullPath)
+                {
+                    onChange.Invoke(path);
+                }
+            };
+
+            fileWatcher.Changed += Do;
+            fileWatcher.Created += Do;
+            fileWatcher.Deleted += Do;
+            fileWatcher.Renamed += (sender, args) => Do(null, args);
+
+            return fileWatcher;
         }
 
         public static void WatchFolder(string dirPath, bool recursive, Action onChange)
@@ -44,11 +57,11 @@ namespace CustomBeatmaps
 
         public static void WatchFileForModifications(string fpath, Action<string> onWriteChange)
         {
-            WatchFile(fpath, () =>
+            WatchFile(fpath, path =>
             {
-                if (File.Exists(fpath))
+                if (File.Exists(path))
                 {
-                    onWriteChange.Invoke(fpath);
+                    onWriteChange.Invoke(path);
                 }
             });
 
