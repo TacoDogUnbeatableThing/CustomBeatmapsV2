@@ -33,7 +33,7 @@ namespace CustomBeatmaps.Packages
                 Directory.CreateDirectory(localPackagesDirectory);
             }
             // If any file gets updated locally, mark the local cache as dirty.
-            PackageHelper.ListenToLocalChanges(_localPackagesDirectory, () =>
+            PackageGrabberUtils.ListenToLocalChanges(_localPackagesDirectory, () =>
             {
                 Console.WriteLine("Local Packages CHANGE DETECTED!");
                 _updated = false;
@@ -110,7 +110,7 @@ namespace CustomBeatmaps.Packages
 
         private void ReloadLocalPackages()
         {
-            _localPackages = PackageHelper.LoadLocalCustomPackages(_localPackagesDirectory);
+            _localPackages = PackageGrabberUtils.LoadLocalCustomPackages(_localPackagesDirectory);
             _updated = true;
         }
     }
