@@ -93,7 +93,7 @@ namespace CustomBeatmaps
         private void OnEditOsuMap(string beatmapPath)
         {
             // Make a copy of our Mp3 locally and set that local path as the audio key.
-            var bmap = PackageHelper.LoadBeatmap(beatmapPath);
+            var bmap = PackageGrabberUtils.LoadBeatmap(beatmapPath);
             string fullAudioPath = bmap.RealAudioKey;
             string localMp3 = $"../../{_localTempMp3File.CopyNewFile(fullAudioPath)}";
             Debug.Log($"OPENING (full Audio: {fullAudioPath} -> {localMp3}");
@@ -104,7 +104,7 @@ namespace CustomBeatmaps
         private void DoOsuLocalSearch(Action<string[]> onSearch, Action<string> onFail)
         {
             string[] osuBeatmaps;
-            if (OsuHelper.GetOsuBeatmaps(_settings.OsuSongPathOverride, out osuBeatmaps))
+            if (OsuHelper.GetOsuBeatmaps(OsuHelper.GetOsuPath(_settings.OsuSongPathOverride), out osuBeatmaps))
             {
                 onSearch.Invoke(osuBeatmaps);
             }

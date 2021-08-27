@@ -28,8 +28,7 @@ namespace CustomBeatmaps.Packages
                     var osuFile = fname.Replace("\\", "/");
                     try
                     {
-                        var text = File.ReadAllText(osuFile);
-                        var beatmap = LoadBeatmap(osuFile, text);
+                        var beatmap = LoadBeatmap(osuFile);
                         beatmaps.Add(beatmap);
                     }
                     catch (BeatmapLoadException e)
@@ -71,8 +70,9 @@ namespace CustomBeatmaps.Packages
             throw new BeatmapLoadException(path, $"{prop} property not found.");
         }
 
-        private static CustomBeatmapInfo LoadBeatmap(string bmapPath, string text)
+        public static CustomBeatmapInfo LoadBeatmap(string bmapPath)
         {
+            string text = File.ReadAllText(bmapPath);
             string songName = GetBeatmapProp(text, "Title", bmapPath);
             string difficulty = GetBeatmapProp(text, "Version", bmapPath);
             string artist = GetBeatmapProp(text, "Artist", bmapPath);
