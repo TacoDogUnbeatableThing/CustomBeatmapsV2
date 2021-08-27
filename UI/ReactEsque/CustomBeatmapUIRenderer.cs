@@ -84,6 +84,9 @@ namespace CustomBeatmaps.UI.ReactEsque
                 // When our query changes or we switch modes, reload.
                 Debug.Log($"RELOADING BEATMAPS: {(online ? "ONLINE" : "LOCAL")}");
                 setLoading(true);
+                // Reset package list to be empty
+                setPackageInfos.Invoke(new List<CustomPackageInfo>());
+                setSelectedPackage(-1);
                 if (online)
                 {
                     _props.DoOnlineSearch.Invoke(searchQuery, SetPackageInfoLoaded);
@@ -159,6 +162,12 @@ namespace CustomBeatmaps.UI.ReactEsque
                 {
                     OnlinePicker.Render(online, setOnline);
                     SearchBar.Render(searchQuery, setSearchQuery);
+
+                    if (online)
+                    {
+                        GUILayout.Label("(Online mode coming soon!)");
+                    }
+
                     GUILayout.BeginHorizontal();
                     // Package List
                     int pageNumber = (searchQuery.StartPackage / pageSize) + 1;

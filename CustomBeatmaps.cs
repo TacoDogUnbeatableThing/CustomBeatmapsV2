@@ -76,7 +76,7 @@ namespace CustomBeatmaps
         private void GetOnlinePackageCount(Action<int> getter)
         {
             // TODO: Query database for total package count.
-            throw new NotImplementedException();
+            getter.Invoke(0);
         }
 
         private void DoLeaderboardSearch(UniqueId id, string difficulty, Action<LeaderboardInfo> getter)
@@ -89,7 +89,6 @@ namespace CustomBeatmaps
         {
             // TODO: Begin download locally from online, given id.
             // TODO: BeatmapPlayer: Cancel previous "play", but keep the download going.
-            throw new NotImplementedException();
         }
 
         private void DoLocalSearch(SearchQuery searchQuery, Action<IList<CustomPackageInfo>> getter)
@@ -101,7 +100,6 @@ namespace CustomBeatmaps
         private void DoOnlineSearch(SearchQuery searchQuery, Action<IList<CustomPackageInfo>> getter)
         {
             // TODO: Jane's PR, potentially.
-            throw new NotImplementedException();
         }
 
         private void OnPlayRequest(UniqueId id, string difficulty)
