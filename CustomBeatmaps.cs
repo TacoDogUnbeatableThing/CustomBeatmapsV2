@@ -59,6 +59,7 @@ namespace CustomBeatmaps
             Harmony.CreateAndPatchAll(typeof(BeatmapInfoAudioKeyOverridePatch));
             Harmony.CreateAndPatchAll(typeof(MainMenuLoadPatch));
             Harmony.CreateAndPatchAll(typeof(MemorySkipAfterCustomBeatmapPatch));
+            Harmony.CreateAndPatchAll(typeof(OsuEditorPatch));
 
             MainMenuLoadPatch.OnOpen += () =>
             {
