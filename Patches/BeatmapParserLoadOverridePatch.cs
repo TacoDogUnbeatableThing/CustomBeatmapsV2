@@ -14,7 +14,12 @@ namespace CustomBeatmaps.Patches
         {
             _override = toOverride;
         }
-        
+
+        public static void ResetOverrideBeatmap()
+        {
+            _override = null;
+        }
+
         [HarmonyPatch(typeof(BeatmapParser), "ParseBeatmap")]
         [HarmonyPrefix]
         private static void ParseBeatmap(BeatmapParser __instance, ref bool __runOriginal)
@@ -27,7 +32,6 @@ namespace CustomBeatmaps.Patches
                 var beatmapInfo = _override;
                 beatmapParserEngine.ReadBeatmap(beatmapInfo.text, ref __instance.beatmap);
                 __instance.audioKey = beatmapInfo.audioKey;
-                _override = null;
             }
         }
     }

@@ -63,6 +63,8 @@ namespace CustomBeatmaps
                     }
                 ));
                 _uiMain.Open();
+                // We're no longer loading a custom beatmap if we're in the main menu.
+                BeatmapParserLoadOverridePatch.ResetOverrideBeatmap();
             };
         }
 
