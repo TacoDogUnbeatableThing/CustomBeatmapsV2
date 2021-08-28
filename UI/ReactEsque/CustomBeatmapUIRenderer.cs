@@ -174,14 +174,14 @@ namespace CustomBeatmaps.UI.ReactEsque
                 GUILayout.Window(Reacc.GetUniqueId(), centerRect, _ =>
                 {
                     PackageModePicker.Render(packageMode, setPackageMode);
-                    SearchBar.Render(searchQuery, setSearchQuery);
+
+                    GUILayout.Label($"<size=32>{packageMode}</size>");
 
                     if (packageMode == PackageMode.Online)
                     {
                         GUILayout.Label("(Online mode coming soon!)");
                     }
 
-                    GUILayout.BeginHorizontal();
                     // Package List
                     int pageNumber = (searchQuery.StartPackage / pageSize) + 1;
                     int totalPages = (totalPackages / pageSize) + 1;
@@ -195,6 +195,8 @@ namespace CustomBeatmaps.UI.ReactEsque
                     {
                         case PackageMode.Local:
                         case PackageMode.Online:
+                            SearchBar.Render(searchQuery, setSearchQuery);
+                            GUILayout.BeginHorizontal();
                             PackageListPicker.Render(
                                 packageInfos,
                                 selectedPackage,
@@ -225,13 +227,12 @@ namespace CustomBeatmaps.UI.ReactEsque
                                     GUILayout.Width(Screen.width / 2 - windowPad * 2)
                                 );
                             }
+                            GUILayout.EndHorizontal();
                             break;
                         case PackageMode.Osu:
                             OSUPackagePicker.Render(osuMaps, _props.OnEditOsuMap, osuError);
                             break;
                     }
-
-                    GUILayout.EndHorizontal();
                 }, "Beatmap Picker");
             }
         }

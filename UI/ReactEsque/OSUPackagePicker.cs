@@ -13,6 +13,7 @@ namespace CustomBeatmaps.UI.ReactEsque
             (Vector2 scrollPos, var setScrollPos) = Reacc.UseState(Vector2.zero);
             (string selected, var setSelected) = Reacc.UseState("");
 
+            GUILayout.BeginVertical();
             GUILayout.Label("Pick an OSU map to open it in EDIT MODE");
             GUILayout.BeginHorizontal();
             GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
@@ -37,14 +38,19 @@ namespace CustomBeatmaps.UI.ReactEsque
             }
 
             GUILayout.EndVertical();
-            if (!string.IsNullOrEmpty(selected))
-            {
-                if (GUILayout.Button($"EDIT: {Path.GetFileName(selected)}"))
+            GUILayout.BeginVertical();
+                GUILayout.FlexibleSpace();
+                if (!string.IsNullOrEmpty(selected))
                 {
-                    onOpen.Invoke(selected);
+                    if (GUILayout.Button($"EDIT: {Path.GetFileName(selected)}", GUILayout.MinHeight(64)))
+                    {
+                        onOpen.Invoke(selected);
+                    }
+                    // TODO: Add a "Export to Package Zip file" option
                 }
-            }
+            GUILayout.EndVertical();
             GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
         }
     }
 }
