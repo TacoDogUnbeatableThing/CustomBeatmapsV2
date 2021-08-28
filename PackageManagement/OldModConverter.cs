@@ -112,6 +112,7 @@ namespace CustomBeatmaps.Packages
 						}
 
 						MoveFile(songPath, newPackageFullPath + "/" + songName);
+						string packageName = songNameWithoutExtension;
 						string artist = "(undefined)";
 						DateTime dateTime = default;
 						Dictionary<string, string> difficulties = new Dictionary<string, string>();
@@ -121,6 +122,7 @@ namespace CustomBeatmaps.Packages
 							string text = File.ReadAllText(beatmapPath);
 							text = text.Replace(DumbAudioFilenamePrefix, "");
 							artist = PackageGrabberUtils.GetBeatmapProp(text, "Artist", beatmapPath);
+							packageName = PackageGrabberUtils.GetBeatmapProp(text, "Title", beatmapPath);
 							string creator = PackageGrabberUtils.GetBeatmapProp(text, "Creator", beatmapPath);
 							string difficulty = PackageGrabberUtils.GetBeatmapProp(text, "Version", beatmapPath);
 							difficulties[difficulty] = creator;
@@ -137,7 +139,7 @@ namespace CustomBeatmaps.Packages
 							alreadyConvertedBeatmapsInfo.RegisterBeatmapConversion(beatmapPath, newBeatmapFullPath);
 						}
 
-						CustomPackageInfo data = new CustomPackageInfo(songNameWithoutExtension,
+						CustomPackageInfo data = new CustomPackageInfo(packageName,
 							$"{dateTime.Month}/{dateTime.Day}/{dateTime.Year}", artist, difficulties,
 							new UniqueId(newPackageName));
 						CustomPackageInfo.Save(data, newPackageFullPath + "/info.json");

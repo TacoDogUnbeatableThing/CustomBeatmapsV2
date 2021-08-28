@@ -8,7 +8,7 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
         public static void Render(CustomPackageInfo info)
         {
             // TODO: In the future, an Icon maybe?
-            GUILayout.Label($"Name: {info.name}");
+            GUILayout.Label($"<size=40>{info.name}</size>");
             GUILayout.Label($"Date: {info.date}");
         }
     }

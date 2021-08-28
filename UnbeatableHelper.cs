@@ -18,5 +18,10 @@ namespace CustomBeatmaps
             OsuEditorPatch.SetEditMode(true, path);
             LevelManager.LoadLevel("TEST_RHYTHM");
         }
+
+        public static string GetBeatmapUniqueKey(UniqueId id, string difficulty)
+        {
+            return "[" + id.Id + "::" + difficulty + "]";
+        }
     }
 }
