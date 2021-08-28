@@ -9,6 +9,12 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
 {
     public static class PackagePreview
     {
+
+        private static void Heading(string text)
+        {
+            GUILayout.Label($"<size=24>{text}</size>");
+        }
+
         public static void Render(
             CustomPackageInfo packageInfo,
             PackageDownloadStatus downloadStatus,
@@ -80,7 +86,11 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
                         index => setSelectedDifficulty(packageInfo.difficulties.Keys.ToList()[index]),
                         GUILayout.Width(128));
                 GUILayout.EndHorizontal();
+                Heading("Assists");
+                // Parameters (assists)
+                BeatmapAssists.Render();
                 // Leaderboard
+                Heading("Leaderboards");
                 PackageLeaderboard.Render(currentLeaderboard.GetRanks(selectedDifficulty));
 
                 GUILayout.FlexibleSpace();
