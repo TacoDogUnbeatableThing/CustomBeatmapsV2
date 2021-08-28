@@ -24,6 +24,8 @@ namespace CustomBeatmaps.UI.ReactEsque.OsuEditor
 
         protected override void OnUnityGUI()
         {
+            GUILookHelper.SetGUISkin();
+
             bool paused = _props.GetPaused();
             float songTime = _props.GetCurrentTime();
             float songDuration = _props.GetSongTotalLength();

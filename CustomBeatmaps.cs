@@ -37,7 +37,6 @@ namespace CustomBeatmaps
         {
             Instance = this;
             Debug.Log("ADDED IN");
-            SetCustomGUISkin();
 
             _packageGrabber = new PackageGrabber(UserPackageDirectory);
             _oldModConverter = new OldModConverter(UserPackageDirectory, "USER_BEATMAPS", ".conversions");
@@ -149,12 +148,6 @@ namespace CustomBeatmaps
         {
             Debug.LogError(e);
             // TODO: Display an in-game popup or something
-        }
-
-        private void SetCustomGUISkin()
-        {
-            var skin = ScriptableObject.CreateInstance<GUISkin>();
-            skin.window.normal.background = Texture2D.grayTexture;
         }
     }
 }

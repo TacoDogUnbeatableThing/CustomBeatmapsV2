@@ -39,6 +39,7 @@ namespace CustomBeatmaps.UI.ReactEsque
         protected override void OnUnityGUI()
         {
             Reacc.SetStore(_store);
+            GUILookHelper.SetGUISkin();
             /*
              * State:
              *  - Local/Online mode
