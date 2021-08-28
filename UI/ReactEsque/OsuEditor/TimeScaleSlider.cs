@@ -13,7 +13,7 @@ namespace CustomBeatmaps.UI.ReactEsque.OsuEditor
             (float timeScaleMax, var setTimeScaleMax) = Reacc.UseState(50f);
 
             // TODO: Negative speeds?
-            timeScale = GUILayout.HorizontalSlider(timeScale, 0.125f, timeScaleMax, options);
+            timeScale = GUILayout.HorizontalSlider(timeScale, 0.5f, timeScaleMax, options);
             GUILayout.Label($"{timeScale:0.0}x",GUILayout.ExpandWidth(false));
             setTimeScale.Invoke(timeScale);
             onTimeScaleSet.Invoke(timeScale);
