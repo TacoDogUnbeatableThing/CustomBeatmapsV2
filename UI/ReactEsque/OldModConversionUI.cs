@@ -14,6 +14,7 @@ namespace CustomBeatmaps.UI.ReactEsque
 
             (bool forceMove, var setForceMove) = Reacc.UseState(true);
             (string message, var setMessage) = Reacc.UseState("");
+            (Vector2 textScroll, var setTextScroll) = Reacc.UseState(Vector2.zero);
 
             Rect centerRect = new Rect(Screen.width/2f - windowWidth/2, Screen.height/2f - windowHeight, windowWidth, windowHeight);
             GUILayout.Window(Reacc.GetUniqueId(), centerRect, _ =>
@@ -23,7 +24,9 @@ namespace CustomBeatmaps.UI.ReactEsque
                 GUILayout.Space(16);
                 if (hasMessage)
                 {
-                    GUILayout.TextArea(message);
+                    setTextScroll(GUILayout.BeginScrollView(textScroll));
+                        GUILayout.TextArea(message);
+                    GUILayout.EndScrollView();
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Close", GUILayout.ExpandWidth(true)))
                     {
