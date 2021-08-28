@@ -105,6 +105,7 @@ namespace CustomBeatmaps
         private void OnPlayRequest(UniqueId id, string difficulty)
         {
             // TODO: If beatmap is not downloaded, download first then play.
+            JeffBezosController.beatmapToLoad = UnbeatableHelper.GetBeatmapUniqueKey(id, difficulty); // For high score loading
             UnbeatableHelper.PlayBeatmap(_packageGrabber.GetLocalBeatmap(id, difficulty));
             _uiMain?.Close();
         }

@@ -10,5 +10,10 @@ namespace CustomBeatmaps
             CustomBeatmapLoadingOverridePatch.SetOverrideBeatmap(beatmap);
             LevelManager.LoadLevel("TEST_RHYTHM");
         }
+
+        public static string GetBeatmapUniqueKey(UniqueId id, string difficulty)
+        {
+            return "[" + id.Id + "::" + difficulty + "]";
+        }
     }
 }

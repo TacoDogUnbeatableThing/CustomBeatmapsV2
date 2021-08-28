@@ -88,6 +88,9 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
                         GUILayout.Toolbar(index, keys.ToArray())
                     ]);
                 GUILayout.EndHorizontal();
+                // Personal high score
+                PersonalHighScore.Render(packageInfo.DatabaseId, selectedDifficulty);
+
                 Heading("Assists");
                 // Parameters (assists)
                 BeatmapAssists.Render();
