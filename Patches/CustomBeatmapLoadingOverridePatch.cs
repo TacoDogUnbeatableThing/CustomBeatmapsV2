@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CustomBeatmaps.Patches
 {
-    public static class BeatmapParserLoadOverridePatch
+    public static class CustomBeatmapLoadingOverridePatch
     {
 
         private static CustomBeatmapInfo _override;
@@ -32,6 +32,18 @@ namespace CustomBeatmaps.Patches
                 var beatmapInfo = _override;
                 beatmapParserEngine.ReadBeatmap(beatmapInfo.text, ref __instance.beatmap);
                 __instance.audioKey = beatmapInfo.audioKey;
+            }
+        }
+
+        [HarmonyPatch(typeof(Rhythm.RhythmController), "Start")]
+        [HarmonyPostfix]
+        private static void StartPostfix(Rhythm.RhythmController __instance)
+        {
+            if (_override != null)
+            {
+                string loadFrom = __instance.parser.audioKey;
+                Debug.Log($"PRELOADING: {loadFrom}");
+                __instance.songTracker.PreloadFromFile(loadFrom);
             }
         }
     }

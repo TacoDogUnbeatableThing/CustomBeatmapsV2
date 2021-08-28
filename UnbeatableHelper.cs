@@ -7,14 +7,14 @@ namespace CustomBeatmaps
     {
         public static void PlayBeatmap(CustomBeatmapInfo beatmap)
         {
-            BeatmapParserLoadOverridePatch.SetOverrideBeatmap(beatmap);
+            CustomBeatmapLoadingOverridePatch.SetOverrideBeatmap(beatmap);
             OsuEditorPatch.SetEditMode(false);
             LevelManager.LoadLevel("TEST_RHYTHM");
         }
 
         public static void PlayBeatmapEdit(CustomBeatmapInfo beatmap, string path)
         {
-            BeatmapParserLoadOverridePatch.SetOverrideBeatmap(beatmap);
+            CustomBeatmapLoadingOverridePatch.SetOverrideBeatmap(beatmap);
             OsuEditorPatch.SetEditMode(true, path);
             LevelManager.LoadLevel("TEST_RHYTHM");
         }

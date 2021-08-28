@@ -55,7 +55,7 @@ namespace CustomBeatmaps
                 _settings = Settings.Load(path);
             });
 
-            Harmony.CreateAndPatchAll(typeof(BeatmapParserLoadOverridePatch));
+            Harmony.CreateAndPatchAll(typeof(CustomBeatmapLoadingOverridePatch));
             Harmony.CreateAndPatchAll(typeof(BeatmapInfoAudioKeyOverridePatch));
             Harmony.CreateAndPatchAll(typeof(MainMenuLoadPatch));
             Harmony.CreateAndPatchAll(typeof(MemorySkipAfterCustomBeatmapPatch));
@@ -82,7 +82,7 @@ namespace CustomBeatmaps
                 // Some extra cleanup never hurt nobody
                 _localTempMp3File.Cleanup();
                 // We're no longer loading a custom beatmap if we're in the main menu.
-                BeatmapParserLoadOverridePatch.ResetOverrideBeatmap();
+                CustomBeatmapLoadingOverridePatch.ResetOverrideBeatmap();
             };
         }
 
