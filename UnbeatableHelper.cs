@@ -7,7 +7,7 @@ namespace CustomBeatmaps
     {
         public static void PlayBeatmap(CustomBeatmapInfo beatmap)
         {
-            BeatmapParserLoadOverridePatch.SetOverrideBeatmap(beatmap);
+            CustomBeatmapLoadingOverridePatch.SetOverrideBeatmap(beatmap);
             LevelManager.LoadLevel("TEST_RHYTHM");
         }
     }

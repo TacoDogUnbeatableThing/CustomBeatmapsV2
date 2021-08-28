@@ -83,15 +83,8 @@ namespace CustomBeatmaps.Packages
             var audioFolder = Path.GetDirectoryName(bmapPath);
             var trueAudioPath = audioFolder + "/" + audioFile; // Path.Join fails.
 
-            // I could use Path.GetRelativePath but that results in a "MissingMethodException".
-            var audioRelativeToRoot = trueAudioPath.Substring(CustomBeatmaps.UnbeatableDirectory.Length + 1);
-
-            // FMOD can use relative paths for some reason...
-            // I have no clue how Ratismal figured this out, I would never on my own. Big props to them.
-            var relativePath = $"../../{audioRelativeToRoot}".Replace('\\', '/');
-
             return new CustomBeatmapInfo(new TextAsset(text), songName, difficulty, artist, beatmapCreator,
-                relativePath);
+                trueAudioPath);
         }
 
         public static void ListenToLocalChanges(string rootDirectory, Action onChange)

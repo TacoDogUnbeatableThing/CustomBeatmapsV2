@@ -39,7 +39,7 @@ namespace CustomBeatmaps
 
             _oldModConverter = new OldModConverter(UserPackageDirectory, "USER_BEATMAPS", ".conversions");
 
-            Harmony.CreateAndPatchAll(typeof(BeatmapParserLoadOverridePatch));
+            Harmony.CreateAndPatchAll(typeof(CustomBeatmapLoadingOverridePatch));
             Harmony.CreateAndPatchAll(typeof(BeatmapInfoAudioKeyOverridePatch));
             Harmony.CreateAndPatchAll(typeof(MainMenuLoadPatch));
             Harmony.CreateAndPatchAll(typeof(MemorySkipAfterCustomBeatmapPatch));
@@ -64,7 +64,7 @@ namespace CustomBeatmaps
                 ));
                 _uiMain.Open();
                 // We're no longer loading a custom beatmap if we're in the main menu.
-                BeatmapParserLoadOverridePatch.ResetOverrideBeatmap();
+                CustomBeatmapLoadingOverridePatch.ResetOverrideBeatmap();
             };
         }
 
