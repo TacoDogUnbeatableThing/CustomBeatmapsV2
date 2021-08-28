@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Reflection;
 using CustomBeatmaps.Packages;
 using CustomBeatmaps.UI.ReactEsque.OsuEditor;
 using CustomBeatmaps.UI.Structure;
 using FMOD;
 using FMOD.Studio;
-using FMODUnity;
 using HarmonyLib;
 using Rhythm;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
 using Debug = UnityEngine.Debug;
-using Object = System.Object;
 
 namespace CustomBeatmaps.Patches
 {
@@ -46,18 +43,20 @@ namespace CustomBeatmaps.Patches
         public static void SetEditMode(bool editMode, string path=null)
         {
             _editMode = editMode;
-            _editPath = path.Replace('\\', '/');
+            _editPath = path != null? path.Replace('\\', '/') : path;
         }
 
         [HarmonyPatch(typeof(Rhythm.RhythmController), "Start")]
         [HarmonyPostfix]
-        private static void StartPost(Rhythm.RhythmController __instance, EventInstance ___musicInstance)
+        private static void StartPost(Rhythm.RhythmController __instance)
         {
             if (Enabled)
             {
                 Debug.Log("OPENED OSU EDIT VIEW");
                 _rhythmControllerInstance = __instance;
-                _musicInstance = ___musicInstance;
+                // Some stuff
+                var field = typeof(RhythmTracker).GetField("instance", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                _musicInstance = (EventInstance) field.GetValue(__instance.songTracker);
 
                 __instance.noFailOverride = true;
 
@@ -69,7 +68,7 @@ namespace CustomBeatmaps.Patches
                 _ui.Init(new OsuUIMainProps(OnSetPaused, OnSetTime, GetPaused, GetCurrentTime, GetSongTotalLength));
 
                 // Some other caching/initialization
-                _songDurationEstimate = GetSongDurationEstimate(__instance.beatmap, ___musicInstance);
+                _songDurationEstimate = GetSongDurationEstimate(__instance.beatmap, _musicInstance);
             }
         }
 
@@ -133,13 +132,12 @@ namespace CustomBeatmaps.Patches
 
         private static void OnSetTime(float time)
         {
-            return;
             Debug.Log($"TIME => {time}");
             var result = _musicInstance.setTimelinePosition((int) (time * 1000));
             // TODO: This sucks, I can't figure out how to get this to work with programmer sounds.
             // The janky but surefire way is to go back to importing ManagedBass... But that'll make this more
             // bloatier :( Might be worth it though.
-            _rhythmControllerInstance.songSource.time = time;
+            //_rhythmControllerInstance.songSource.time = time;
 
             if (result != RESULT.OK)
             {
@@ -188,15 +186,14 @@ namespace CustomBeatmaps.Patches
         {
             // Hacky fix to fix song position getting offset?
             float songPos = GetCurrentTime() * 1000f + instance.playerTimingOffsetMs;
-            instance.song.songPosition = songPos;
 
             // Force to current point in time
-            while (notes.Count > 0 && (instance.song.songPosition >= notes.Peek().time ||
+            while (notes.Count > 0 && (instance.songTracker.Position >= notes.Peek().time ||
                                        instance.freestyleParent != null))
             {
                 notes.Dequeue();
             }
-            while (commands.Count > 0 && instance.song.songPosition >= (float) commands.Peek().start)
+            while (commands.Count > 0 && instance.songTracker.Position >= (float) commands.Peek().start)
             {
                 commands.Dequeue();
             }
@@ -223,7 +220,7 @@ namespace CustomBeatmaps.Patches
             instance.cameraObject.SetTargetPoint(instance.rightCameraTargetPoint);
             instance.cameraIsCentered = false;
             // Parse all flips until we arrive at our current position.
-            while (flips.Count > 0 && instance.song.songPosition >= (float) flips.Peek().time)
+            while (flips.Count > 0 && instance.songTracker.Position >= (float) flips.Peek().time)
             {
                 UpdateFlips(instance);
             }

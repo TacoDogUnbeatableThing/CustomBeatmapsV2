@@ -23,6 +23,9 @@
         <Reference Include="UnityEngine">
             <HintPath>..\..\UNBEATABLE [white label]_Data\Managed\UnityEngine.dll</HintPath>
         </Reference>
+        <Reference Include="FMODUnity">
+            <HintPath>..\..\UNBEATABLE [white label]_Data\Managed\FMODUnity.dll</HintPath>
+        </Reference>
         <Reference Include="UnityEngine.CoreModule">
             <HintPath>..\..\UNBEATABLE [white label]_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
         </Reference>

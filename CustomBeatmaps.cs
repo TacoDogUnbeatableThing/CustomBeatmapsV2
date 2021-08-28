@@ -19,15 +19,11 @@ namespace CustomBeatmaps
 
         private static readonly string SETTINGS_RELPATH = "CustomBeatmapSettings.json";
 
-        private static readonly string LOCAL_TEMP_MP3_RELPATH = ".osu_edit_temp.mp3";
-
         private PackageGrabber _packageGrabber;
 
         private OldModConverter _oldModConverter;
 
         private ICustomBeatmapUIMain _uiMain;
-
-        private TemporaryCopiedFile _localTempMp3File;
 
         private Settings _settings;
 
@@ -45,8 +41,6 @@ namespace CustomBeatmaps
 
             _packageGrabber = new PackageGrabber(UserPackageDirectory);
             _oldModConverter = new OldModConverter(UserPackageDirectory, "USER_BEATMAPS", ".conversions");
-            _localTempMp3File = new TemporaryCopiedFile(LOCAL_TEMP_MP3_RELPATH);
-            _localTempMp3File.Cleanup();
 
             _settings = Settings.Load(SETTINGS_RELPATH);
             FileWatchHelper.WatchFileForModifications(SETTINGS_RELPATH, path =>
@@ -79,8 +73,6 @@ namespace CustomBeatmaps
                     OnEditOsuMap
                 ));
                 _uiMain.Open();
-                // Some extra cleanup never hurt nobody
-                _localTempMp3File.Cleanup();
                 // We're no longer loading a custom beatmap if we're in the main menu.
                 CustomBeatmapLoadingOverridePatch.ResetOverrideBeatmap();
             };
@@ -93,12 +85,7 @@ namespace CustomBeatmaps
 
         private void OnEditOsuMap(string beatmapPath)
         {
-            // Make a copy of our Mp3 locally and set that local path as the audio key.
             var bmap = PackageGrabberUtils.LoadBeatmap(beatmapPath);
-            string fullAudioPath = bmap.RealAudioKey;
-            string localMp3 = $"../../{_localTempMp3File.CopyNewFile(fullAudioPath)}";
-            Debug.Log($"OPENING (full Audio: {fullAudioPath} -> {localMp3}");
-            bmap.RealAudioKey = localMp3;
             UnbeatableHelper.PlayBeatmapEdit(bmap, beatmapPath);
         }
 
