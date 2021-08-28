@@ -37,7 +37,7 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
             (LeaderboardInfo currentLeaderboard, var setCurrentLeaderboard) = Reacc.UseState(LeaderboardInfo.Empty);
             (bool loadingLeaderboard, var setLoadingLeaderboard) = Reacc.UseState(true);
 
-            bool hasOnline = !packageInfo.DatabaseId.IsPureLocal; 
+            bool hasOnline = !packageInfo.DatabaseId.IsPureLocal;
 
             Reacc.UseEffect(() =>
             {
@@ -80,11 +80,13 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
                 // Difficulty Picker
                 GUILayout.BeginHorizontal();
                     GUILayout.Label("Difficulty: ");
-                    Dropdown.Render(
-                        selectedDifficulty,
-                        packageInfo.difficulties.Keys.ToList(),
-                        index => setSelectedDifficulty(packageInfo.difficulties.Keys.ToList()[index]),
-                        GUILayout.Width(128));
+                    var keys = packageInfo.difficulties.Keys.ToList();
+                    // Toolbar of difficulties, so it's easy to pick from a group.
+                    int index = keys.IndexOf(selectedDifficulty);
+                    if (index < 0) index = 0;
+                    setSelectedDifficulty.Invoke(packageInfo.difficulties.Keys.ToList()[
+                        GUILayout.Toolbar(index, keys.ToArray())
+                    ]);
                 GUILayout.EndHorizontal();
                 Heading("Assists");
                 // Parameters (assists)
@@ -108,7 +110,7 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
                         AnimatedDownloadText.Render();
                         break;
                     case PackageDownloadStatus.Downloaded:
-                        if (BottomButton("PLAY"))
+                        if (BottomButton($"PLAY: {selectedDifficulty}"))
                         {
                             onDifficultyPlayRequested.Invoke(selectedDifficulty);
                         }
