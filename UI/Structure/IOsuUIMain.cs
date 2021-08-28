@@ -12,15 +12,15 @@ namespace CustomBeatmaps.UI.Structure
     public struct OsuUIMainProps
     {
         public Action<bool> OnSetPaused;
-        public Action<float> OnSetTime;
+        public Action<float> OnSetTimeScale;
         public Func<bool> GetPaused;
         public Func<float> GetCurrentTime;
         public Func<float> GetSongTotalLength;
 
-        public OsuUIMainProps(Action<bool> onSetPaused, Action<float> onSetTime, Func<bool> getPaused, Func<float> getCurrentTime, Func<float> getSongTotalLength)
+        public OsuUIMainProps(Action<bool> onSetPaused, Action<float> onSetTimeScale, Func<bool> getPaused, Func<float> getCurrentTime, Func<float> getSongTotalLength)
         {
             OnSetPaused = onSetPaused;
-            OnSetTime = onSetTime;
+            OnSetTimeScale = onSetTimeScale;
             GetPaused = getPaused;
             GetCurrentTime = getCurrentTime;
             GetSongTotalLength = getSongTotalLength;

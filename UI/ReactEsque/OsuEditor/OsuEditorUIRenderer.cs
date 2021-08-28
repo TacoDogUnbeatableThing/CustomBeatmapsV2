@@ -31,7 +31,8 @@ namespace CustomBeatmaps.UI.ReactEsque.OsuEditor
             BottomPanel.Render(16, 64, () =>
             {
                 PauseButton.Render(paused, _props.OnSetPaused, GUILayout.Width(128));
-                TimerSlider.Render(songTime, songDuration, _props.OnSetTime, GUILayout.ExpandWidth(true));
+                TimerSlider.Render(songTime, songDuration, _ => {/*Don't set time yet*/}, GUILayout.ExpandWidth(true));
+                TimeScaleSlider.Render(_props.OnSetTimeScale, GUILayout.Width(256));
             });
 
             if (!JeffBezosController.paused && Event.current.type == EventType.KeyUp && Event.current.keyCode == KeyCode.Space)

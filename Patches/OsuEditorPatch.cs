@@ -38,6 +38,7 @@ namespace CustomBeatmaps.Patches
         private static float _songDurationEstimate = -1;
         private static Rhythm.RhythmController _rhythmControllerInstance;
         private static EventInstance _musicInstance;
+        private static float _overrideTimeScale = 1;
 
         private static bool Enabled => _editMode && !string.IsNullOrEmpty(_editPath);
         public static void SetEditMode(bool editMode, string path=null)
@@ -65,11 +66,16 @@ namespace CustomBeatmaps.Patches
 
                 // Show UI
                 _ui = new OsuEditorUIRenderer();
-                _ui.Init(new OsuUIMainProps(OnSetPaused, OnSetTime, GetPaused, GetCurrentTime, GetSongTotalLength));
+                _ui.Init(new OsuUIMainProps(OnSetPaused, OnSetTimeScale, GetPaused, GetCurrentTime, GetSongTotalLength));
 
                 // Some other caching/initialization
                 _songDurationEstimate = GetSongDurationEstimate(__instance.beatmap, _musicInstance);
             }
+        }
+
+        private static void OnSetTimeScale(float timeScale)
+        {
+           _overrideTimeScale = timeScale;
         }
 
         [HarmonyPatch(typeof(Rhythm.RhythmController), "Update")]
@@ -97,16 +103,28 @@ namespace CustomBeatmaps.Patches
             _reloadFlag = ReloadFlag.None;
         }
 
+
+        [HarmonyPatch(typeof(RhythmTracker), "TimeScale", MethodType.Getter)]
+        [HarmonyPrefix]
+        private static void OverrideTimeScale(ref float __result, ref bool __runOriginal)
+        {
+            if (Enabled)
+            {
+                __runOriginal = false;
+                __result = _overrideTimeScale * Time.timeScale;
+            }
+        }
+
         // Exposed methods
         [HarmonyReversePatch]
         [HarmonyPatch(typeof(Rhythm.RhythmController), "UpdateFlips")]
-        public static void UpdateFlips(object instance)
+        private  static void UpdateFlips(object instance)
         {
             // It's a stub
         }
         [HarmonyReversePatch]
         [HarmonyPatch(typeof(Rhythm.RhythmController), "FixedUpdate")]
-        public static void FixedUpdate(object instance)
+        private  static void FixedUpdate(object instance)
         {
             // It's a stub
         }
@@ -128,22 +146,6 @@ namespace CustomBeatmaps.Patches
             bool paused;
             _musicInstance.getPaused(out paused);
             return paused;
-        }
-
-        private static void OnSetTime(float time)
-        {
-            Debug.Log($"TIME => {time}");
-            var result = _musicInstance.setTimelinePosition((int) (time * 1000));
-            // TODO: This sucks, I can't figure out how to get this to work with programmer sounds.
-            // The janky but surefire way is to go back to importing ManagedBass... But that'll make this more
-            // bloatier :( Might be worth it though.
-            //_rhythmControllerInstance.songSource.time = time;
-
-            if (result != RESULT.OK)
-            {
-                Debug.Log($"FAILED: {result}");
-            }
-            _reloadFlag = ReloadFlag.Time;
         }
 
         private static void OnSetPaused(bool paused)
