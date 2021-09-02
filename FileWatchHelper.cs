@@ -11,9 +11,9 @@ namespace CustomBeatmaps
             var fileWatcher = new FileSystemWatcher
             {
                 Path = Path.GetDirectoryName(fpath),
-                NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
+                NotifyFilter = NotifyFilters.DirectoryName |
                                NotifyFilters.FileName
-                               | NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size,
+                               | NotifyFilters.LastWrite | NotifyFilters.Size,
                 EnableRaisingEvents = true,
                 Filter = fpath,
                 IncludeSubdirectories = false

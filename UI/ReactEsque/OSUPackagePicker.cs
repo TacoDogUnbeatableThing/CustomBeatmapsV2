@@ -8,10 +8,17 @@ namespace CustomBeatmaps.UI.ReactEsque
 {
     public static class OSUPackagePicker
     {
-        public static void Render(string[] osuMaps, Action<string> onOpen, string errorMessage)
+        public static void Render(string[] osuMaps, Action<string> onOpen, Action<string, Action<string>> onOsuExport, string errorMessage)
         {
             (Vector2 scrollPos, var setScrollPos) = Reacc.UseState(Vector2.zero);
             (string selected, var setSelected) = Reacc.UseState("");
+            (string exportMessage, var setExportMessage) = Reacc.UseState("Press EXPORT to export locally.");
+
+            // Reset export message if we pick a different map.
+            Reacc.UseEffect(() =>
+            {
+                setExportMessage.Invoke("Press EXPORT to export locally.");
+            }, new object[]{selected});
 
             GUILayout.BeginVertical();
             GUILayout.Label("Pick an OSU map to open it in EDIT MODE");
@@ -39,14 +46,19 @@ namespace CustomBeatmaps.UI.ReactEsque
 
             GUILayout.EndVertical();
             GUILayout.BeginVertical();
+                GUILayout.Label(exportMessage);
                 GUILayout.FlexibleSpace();
                 if (!string.IsNullOrEmpty(selected))
                 {
-                    if (GUILayout.Button($"EDIT: {Path.GetFileName(selected)}", GUILayout.MinHeight(64)))
+                    string pathName = Path.GetFileName(selected);
+                    if (GUILayout.Button($"EXPORT: {pathName}"))
+                    {
+                        onOsuExport.Invoke(Path.GetDirectoryName(selected), setExportMessage);
+                    }
+                    if (GUILayout.Button($"EDIT: {pathName}", GUILayout.MinHeight(64)))
                     {
                         onOpen.Invoke(selected);
                     }
-                    // TODO: Add a "Export to Package Zip file" option
                 }
             GUILayout.EndVertical();
             GUILayout.EndHorizontal();

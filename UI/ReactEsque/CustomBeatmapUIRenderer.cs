@@ -231,7 +231,7 @@ namespace CustomBeatmaps.UI.ReactEsque
                             GUILayout.EndHorizontal();
                             break;
                         case PackageMode.Osu:
-                            OSUPackagePicker.Render(osuMaps, _props.OnEditOsuMap, osuError);
+                            OSUPackagePicker.Render(osuMaps, _props.OnEditOsuMap, _props.DoOsuExport, osuError);
                             break;
                     }
                 }, "Beatmap Picker");

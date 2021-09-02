@@ -69,7 +69,8 @@ namespace CustomBeatmaps
                     _oldModConverter.DetectOldBeatmaps(),
                     DoConvertOldBeatmaps,
                     DoOsuLocalSearch,
-                    OnEditOsuMap
+                    OnEditOsuMap,
+                    DoOsuExport
                 ));
                 _uiMain.Open();
                 // We're no longer loading a custom beatmap if we're in the main menu.
@@ -101,6 +102,19 @@ namespace CustomBeatmaps
                               $" You may override this setting by editing {SETTINGS_RELPATH}.");
             }
         }
+        private void DoOsuExport(string osuPath, Action<string> onMessage)
+        {
+            try
+            {
+                string outputZip = OsuHelper.CreateExportZipFile(osuPath, ".TEMP_OSU_EXPORT");
+                onMessage.Invoke($"Saved to \"{outputZip}\".");
+            }
+            catch (Exception)
+            {
+                onMessage.Invoke($"ERROR: {onMessage}");
+            }
+        }
+
 
         private void GetLocalPackageCount(Action<int> getter)
         {
