@@ -42,6 +42,9 @@ namespace CustomBeatmaps
             _oldModConverter = new OldModConverter(UserPackageDirectory, "USER_BEATMAPS", ".conversions");
 
             Settings = Settings.Load(SETTINGS_RELPATH);
+            // Make sure new variables are included.
+            Settings.Save(Settings, SETTINGS_RELPATH);
+
             FileWatchHelper.WatchFileForModifications(SETTINGS_RELPATH, path =>
             {
                 Console.WriteLine("RELOADING SETTINGS");

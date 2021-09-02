@@ -14,7 +14,6 @@ namespace CustomBeatmaps
             if (!File.Exists(path))
             {
                 result = new Settings();
-                File.WriteAllText(path, JsonUtility.ToJson(result, true));
             }
             else
             {
@@ -22,6 +21,11 @@ namespace CustomBeatmaps
             }
 
             return result;
+        }
+
+        public static void Save(Settings settings, string path)
+        {
+            File.WriteAllText(path, JsonUtility.ToJson(settings, true));
         }
     }
 }
