@@ -6,6 +6,7 @@ namespace CustomBeatmaps
     public class Settings
     {
         public string OsuSongPathOverride = "";
+        public bool DarkMode = true;
 
         public static Settings Load(string path)
         {

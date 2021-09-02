@@ -25,7 +25,7 @@ namespace CustomBeatmaps
 
         private ICustomBeatmapUIMain _uiMain;
 
-        private Settings _settings;
+        public Settings Settings { get; private set; }
 
         private string UserPackageDirectory =>
             $"{UnbeatableDirectory}/{BEATMAP_RELPATH}";
@@ -41,11 +41,11 @@ namespace CustomBeatmaps
             _packageGrabber = new PackageGrabber(UserPackageDirectory);
             _oldModConverter = new OldModConverter(UserPackageDirectory, "USER_BEATMAPS", ".conversions");
 
-            _settings = Settings.Load(SETTINGS_RELPATH);
+            Settings = Settings.Load(SETTINGS_RELPATH);
             FileWatchHelper.WatchFileForModifications(SETTINGS_RELPATH, path =>
             {
                 Console.WriteLine("RELOADING SETTINGS");
-                _settings = Settings.Load(path);
+                Settings = Settings.Load(path);
             });
 
             Harmony.CreateAndPatchAll(typeof(CustomBeatmapLoadingOverridePatch));
@@ -91,13 +91,13 @@ namespace CustomBeatmaps
         private void DoOsuLocalSearch(Action<string[]> onSearch, Action<string> onFail)
         {
             string[] osuBeatmaps;
-            if (OsuHelper.GetOsuBeatmaps(OsuHelper.GetOsuPath(_settings.OsuSongPathOverride), out osuBeatmaps))
+            if (OsuHelper.GetOsuBeatmaps(OsuHelper.GetOsuPath(Settings.OsuSongPathOverride), out osuBeatmaps))
             {
                 onSearch.Invoke(osuBeatmaps);
             }
             else
             {
-                onFail.Invoke($"Failed to find beatmaps at {OsuHelper.GetOsuPath(_settings.OsuSongPathOverride)}." +
+                onFail.Invoke($"Failed to find beatmaps at {OsuHelper.GetOsuPath(Settings.OsuSongPathOverride)}." +
                               $" You may override this setting by editing {SETTINGS_RELPATH}.");
             }
         }

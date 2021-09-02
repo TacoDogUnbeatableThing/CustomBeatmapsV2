@@ -13,7 +13,11 @@ namespace CustomBeatmaps
         }
         public static void SetGUISkin()
         {
-            GUI.backgroundColor = Color.black;
+            if (CustomBeatmaps.Instance.Settings.DarkMode)
+            {
+                GUI.backgroundColor = Color.black;
+            }
+
             /*
             //GUI.skin.window.normal.background = _background;
             GUI.skin.window.onNormal = GUI.skin.window.normal;
