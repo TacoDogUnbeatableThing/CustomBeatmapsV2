@@ -40,14 +40,21 @@ namespace CustomBeatmaps.Packages
                 // No beatmaps = no package.
                 if (beatmaps.Count != 0)
                 {
-                    var packageId = Path.GetFileNameWithoutExtension(packageDir);
-                    // Get the id from folder name. Used to reference online stuff.
-                    var id = new UniqueId(packageId);
-                    CustomPackageInfo packageInfo = LoadPackageInfo(packageDir);
-                    // Copy over id from folder name
-                    packageInfo = new CustomPackageInfo(packageInfo.name, packageInfo.date, packageInfo.artist,
-                        packageInfo.difficulties, id);
-                    result.Add(id, new CustomPackageLocalData(packageInfo, beatmaps));
+                    try
+                    {
+                        var packageId = Path.GetFileNameWithoutExtension(packageDir);
+                        // Get the id from folder name. Used to reference online stuff.
+                        var id = new UniqueId(packageId);
+                        CustomPackageInfo packageInfo = LoadPackageInfo(packageDir);
+                        // Copy over id from folder name
+                        packageInfo = new CustomPackageInfo(packageInfo.name, packageInfo.date, packageInfo.artist,
+                            packageInfo.difficulties, id);
+                        result.Add(id, new CustomPackageLocalData(packageInfo, beatmaps));
+                    }
+                    catch (Exception e)
+                    {
+                        CustomBeatmaps.Instance.ShowError(e);
+                    }
                 }
             }
 
