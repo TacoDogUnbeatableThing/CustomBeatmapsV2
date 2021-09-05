@@ -115,13 +115,12 @@ namespace CustomBeatmaps.Packages
 								text = text.Substring(DumbAudioFilenamePrefix.Length);
 							}
 
-							text = Path.GetDirectoryName(fpath) + "/" + text;
-							if (!songToBeatmaps.ContainsKey(text))
+							string songPath = Path.GetDirectoryName(fpath) + "/" + text;
+							if (!songToBeatmaps.ContainsKey(songPath))
 							{
-								songToBeatmaps[text] = new List<string>();
+								songToBeatmaps[songPath] = new List<string>();
 							}
-
-							songToBeatmaps[text].Add(fpath);
+							songToBeatmaps[songPath].Add(fpath);
 						}
 					}
 
@@ -138,19 +137,23 @@ namespace CustomBeatmaps.Packages
 							Log("New directory: " + newPackageFullPath);
 						}
 
+						List<string> newBeatmapPaths = new List<string>(pair.Value.Count);
 						foreach (string beatmapPath in pair.Value)
 						{
 							string beatmapFileName = Path.GetFileName(beatmapPath);
 							string newBeatmapFullPath = newPackageFullPath + "/" + beatmapFileName;
-							MoveFile(beatmapPath, newBeatmapFullPath);
 							string text = File.ReadAllText(beatmapPath);
+							MoveFile(beatmapPath, newBeatmapFullPath);
+							text = ReplaceAudioPath(text);
 							File.WriteAllText(newBeatmapFullPath, text);
 							Log("Updated AudioFilename for " + newBeatmapFullPath);
 							alreadyConvertedBeatmapsInfo.RegisterBeatmapConversion(beatmapPath, newBeatmapFullPath);
+
+							newBeatmapPaths.Add(newBeatmapFullPath);
 						}
 
 						MoveFile(songPath, newPackageFullPath + "/" + songName);
-						CustomPackageInfo data = GeneratePackageInfoFor(songPath, pair.Value.ToArray(), newPackageName);
+						CustomPackageInfo data = GeneratePackageInfoFor(songPath, newBeatmapPaths.ToArray(), newPackageName);
 						CustomPackageInfo.Save(data, newPackageFullPath + "/info.json");
 					}
 
@@ -181,6 +184,12 @@ namespace CustomBeatmaps.Packages
 				throw;
 			}
 		}
+
+		private static string ReplaceAudioPath(string text)
+		{
+			return text.Replace(DumbAudioFilenamePrefix, "");
+		}
+
 		private class AlreadyConvertedBeatmapsInfo
 		{
 			public Dictionary<string, string> AlreadyConverted = new Dictionary<string, string>();
