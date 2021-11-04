@@ -1,4 +1,5 @@
-﻿using CustomBeatmaps.Packages;
+﻿using System;
+using CustomBeatmaps.Packages;
 using HarmonyLib;
 using Rhythm;
 using UnityEngine;
@@ -15,23 +16,54 @@ namespace CustomBeatmaps.Patches
             _override = toOverride;
         }
 
+        private static bool ShouldOverride()
+        {
+            return _override != null;
+        }
+
         public static void ResetOverrideBeatmap()
         {
             _override = null;
         }
 
-        [HarmonyPatch(typeof(BeatmapParser), "ParseBeatmap")]
-        [HarmonyPrefix]
-        private static void ParseBeatmap(BeatmapParser __instance, ref bool __runOriginal)
+        private static void OverrideBeatmapParsing(out BeatmapInfo beatmapInfo, out Beatmap beatmap, out string audioKey)
         {
-            if (_override != null)
+            BeatmapParserEngine beatmapParserEngine = new BeatmapParserEngine();
+            beatmap = ScriptableObject.CreateInstance<Beatmap>();
+            beatmapInfo = _override;
+            beatmapParserEngine.ReadBeatmap(beatmapInfo.text, ref beatmap);
+            audioKey = beatmapInfo.audioKey;
+        }
+
+        [HarmonyPatch(typeof(BeatmapParser), "ParseBeatmap", new Type[0])]
+        [HarmonyPrefix]
+        private static void ParseBeatmapInstance(BeatmapParser __instance, ref bool __runOriginal)
+        {
+            if (ShouldOverride())
             {
                 __runOriginal = false;
-                BeatmapParserEngine beatmapParserEngine = new BeatmapParserEngine();
-                __instance.beatmap = ScriptableObject.CreateInstance<Beatmap>();
-                var beatmapInfo = _override;
-                beatmapParserEngine.ReadBeatmap(beatmapInfo.text, ref __instance.beatmap);
-                __instance.audioKey = beatmapInfo.audioKey;
+                OverrideBeatmapParsing(out _, out __instance.beatmap, out __instance.audioKey);
+            }
+        }
+
+        [HarmonyPatch(
+            typeof(BeatmapParser), "ParseBeatmap",
+            new[]{typeof(BeatmapIndex), typeof(string), typeof(BeatmapInfo), typeof(Beatmap)},
+            new [] {ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Out})
+        ]
+        [HarmonyPrefix]
+        private static void ParseBeatmapStatic(BeatmapIndex beatmapIndex, string beatmapPath, out BeatmapInfo beatmapInfo, out Beatmap beatmap, ref bool __runOriginal)
+        {
+            if (ShouldOverride())
+            {
+                __runOriginal = false;
+                OverrideBeatmapParsing(out beatmapInfo, out beatmap, out _);
+            }
+            else
+            {
+                // Required to set these, but they will get overriden by the original function.
+                beatmapInfo = null;
+                beatmap = null;
             }
         }
 
