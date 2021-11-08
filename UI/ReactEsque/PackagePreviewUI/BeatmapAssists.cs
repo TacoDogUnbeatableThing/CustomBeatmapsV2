@@ -19,7 +19,7 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
             JeffBezosController.SetAssistMode(Toggle(JeffBezosController.GetAssistMode(), "Assist Mode"));
             JeffBezosController.SetNoFail(Toggle(JeffBezosController.GetNoFail(), "No Fail"));
             JeffBezosController.SetSongSpeed(GUILayout.Toolbar(JeffBezosController.GetSongSpeed(),
-                new string[] {"Regular", "Half Time", "Double Time"}));
+                new[] {"Regular", "Half Time", "Double Time"}));
 
             GUILayout.BeginHorizontal();
                 GUILayout.Label("Scroll Speed:", GUILayout.ExpandWidth(false));
@@ -30,9 +30,8 @@ namespace CustomBeatmaps.UI.ReactEsque.PackagePreviewUI
                 {
                     JeffBezosController.SetScrollSpeed(spd);
                 }
-                GUILayout.Label($"= {JeffBezosController.GetScrollSpeed()}");
+                GUILayout.Label($"= {(float)(JeffBezosController.GetScrollSpeedIndex() + 1) * 0.2f:0.0}");
             GUILayout.EndHorizontal();
         }
-
     }
 }
