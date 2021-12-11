@@ -6,6 +6,7 @@ using CustomBeatmaps.Patches;
 using CustomBeatmaps.UI.ReactEsque;
 using CustomBeatmaps.UI.Structure;
 using HarmonyLib;
+using Rhythm;
 using UnityEngine;
 
 namespace CustomBeatmaps
@@ -52,9 +53,7 @@ namespace CustomBeatmaps
             });
 
             Harmony.CreateAndPatchAll(typeof(CustomBeatmapLoadingOverridePatch));
-            Harmony.CreateAndPatchAll(typeof(BeatmapInfoAudioKeyOverridePatch));
             Harmony.CreateAndPatchAll(typeof(MainMenuLoadPatch));
-            Harmony.CreateAndPatchAll(typeof(MemorySkipAfterCustomBeatmapPatch));
             Harmony.CreateAndPatchAll(typeof(OsuEditorPatch));
 
             MainMenuLoadPatch.OnOpen += () =>
@@ -156,7 +155,7 @@ namespace CustomBeatmaps
         private void OnPlayRequest(UniqueId id, string difficulty)
         {
             // TODO: If beatmap is not downloaded, download first then play.
-            JeffBezosController.beatmapToLoad = UnbeatableHelper.GetBeatmapUniqueKey(id, difficulty); // For high score loading
+            JeffBezosController.rhythmProgression = new DefaultProgression(UnbeatableHelper.GetBeatmapUniqueKey(id, difficulty), "TrainStationRhythm");
             UnbeatableHelper.PlayBeatmap(_packageGrabber.GetLocalBeatmap(id, difficulty));
             _uiMain?.Close();
         }

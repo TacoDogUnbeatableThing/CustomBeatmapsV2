@@ -8,13 +8,15 @@ namespace CustomBeatmaps.Packages
     {
         public readonly string Artist;
         public readonly string BeatmapCreator;
+        public readonly string SongName;
         public readonly string RealAudioKey;
 
-        public CustomBeatmapInfo(TextAsset textAsset, string songName, string difficulty, string artist,
-            string beatmapCreator, string realAudioKey) : base(textAsset, songName, difficulty)
+        public CustomBeatmapInfo(TextAsset textAsset, string difficulty, string artist,
+            string beatmapCreator, string songName, string realAudioKey) : base(textAsset, difficulty)
         {
             RealAudioKey = realAudioKey;
             Artist = artist;
+            SongName = songName;
             BeatmapCreator = beatmapCreator;
         }
     }

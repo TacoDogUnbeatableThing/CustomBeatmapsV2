@@ -90,8 +90,8 @@ namespace CustomBeatmaps.Packages
             var audioFolder = Path.GetDirectoryName(bmapPath);
             var trueAudioPath = audioFolder + "/" + audioFile; // Path.Join fails.
 
-            return new CustomBeatmapInfo(new TextAsset(text), songName, difficulty, artist, beatmapCreator,
-                trueAudioPath);
+            return new CustomBeatmapInfo(new TextAsset(text), difficulty, artist, beatmapCreator,
+                songName, trueAudioPath);
         }
 
         public static void ListenToLocalChanges(string rootDirectory, Action onChange)

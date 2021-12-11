@@ -26,13 +26,14 @@ namespace CustomBeatmaps.Patches
             _override = null;
         }
 
-        private static void OverrideBeatmapParsing(out BeatmapInfo beatmapInfo, out Beatmap beatmap, out string audioKey)
+        private static void OverrideBeatmapParsing(out BeatmapInfo beatmapInfo, out Beatmap beatmap, out string audioKey, out string songName)
         {
             BeatmapParserEngine beatmapParserEngine = new BeatmapParserEngine();
             beatmap = ScriptableObject.CreateInstance<Beatmap>();
             beatmapInfo = _override;
             beatmapParserEngine.ReadBeatmap(beatmapInfo.text, ref beatmap);
-            audioKey = beatmapInfo.audioKey;
+            songName = _override.SongName;
+            audioKey = _override.RealAudioKey;
         }
 
         [HarmonyPatch(typeof(BeatmapParser), "ParseBeatmap", new Type[0])]
@@ -42,28 +43,29 @@ namespace CustomBeatmaps.Patches
             if (ShouldOverride())
             {
                 __runOriginal = false;
-                OverrideBeatmapParsing(out _, out __instance.beatmap, out __instance.audioKey);
+                OverrideBeatmapParsing(out _, out __instance.beatmap, out __instance.audioKey, out _);
             }
         }
 
         [HarmonyPatch(
             typeof(BeatmapParser), "ParseBeatmap",
-            new[]{typeof(BeatmapIndex), typeof(string), typeof(BeatmapInfo), typeof(Beatmap)},
-            new [] {ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Out})
+            new[]{typeof(BeatmapIndex), typeof(string), typeof(BeatmapInfo), typeof(Beatmap), typeof(string)},
+            new [] {ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Out, ArgumentType.Out})
         ]
         [HarmonyPrefix]
-        private static void ParseBeatmapStatic(BeatmapIndex beatmapIndex, string beatmapPath, out BeatmapInfo beatmapInfo, out Beatmap beatmap, ref bool __runOriginal)
+        private static void ParseBeatmapStatic(BeatmapIndex beatmapIndex, string beatmapPath, out BeatmapInfo beatmapInfo, out Beatmap beatmap, out string songName, ref bool __runOriginal)
         {
             if (ShouldOverride())
             {
                 __runOriginal = false;
-                OverrideBeatmapParsing(out beatmapInfo, out beatmap, out _);
+                OverrideBeatmapParsing(out beatmapInfo, out beatmap, out _, out songName);
             }
             else
             {
                 // Required to set these, but they will get overriden by the original function.
                 beatmapInfo = null;
                 beatmap = null;
+                songName = null;
             }
         }
 
