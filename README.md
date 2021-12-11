@@ -18,7 +18,7 @@ This is an UNOFFICIAL mod for Unbeatable \[white label\] that lets you play and 
 
 ## Installation
 
-0) Make sure UNBEATABLE is up to date and patched to version `V1.0.4`
+0) Make sure UNBEATABLE is up to date and patched to version `V1.0.6`
 1) Locate Unbeatable's game files (Steam Instructions. For Itch just open the game installation folder)
     1) Locate `UNBEATABLE [white label]` in your Steam Library
     2) Right click `UNBEATABLE [white label]` and click `Properties`
