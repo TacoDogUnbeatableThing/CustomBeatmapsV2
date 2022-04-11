@@ -1,5 +1,5 @@
 
-# Check out [CustomBeatmapsV3](https://github.com/TacoDogUnbeatableThing/CustomBeatmapsV3) instead!
+# THIS IS OUTDATED! Check out [CustomBeatmapsV3](https://github.com/TacoDogUnbeatableThing/CustomBeatmapsV3) instead!
 
 
 # (Deprecated) CustomBeatmapsV2
